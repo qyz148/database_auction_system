@@ -25,6 +25,6 @@ git push
 
 ```zsh
 git fetch --all
-git reset --hard origin/yzy_dev
+git reset --hard origin/{branch name}
 ```
 #### 警告：reset --hard 会丢弃本地的未提交更改，请确保重要更改已提交或备份
