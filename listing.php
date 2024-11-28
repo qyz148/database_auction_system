@@ -6,13 +6,21 @@
   $item_id = $_GET['item_id'];
 
   // TODO: Use item_id to make a query to the database.
+  $conn = new mysqli("localhost", "username", "password", "database");
+  if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+  }
 
-  // DELETEME: For now, using placeholder data.
-  $title = "Placeholder title";
-  $description = "Description blah blah blah";
-  $current_price = 30.50;
-  $num_bids = 1;
-  $end_time = new DateTime('2020-11-02T00:00:00');
+  $sql = "SELECT title, description, current_price, num_bids, end_time FROM items WHERE item_id = ?";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("i", $item_id);
+  $stmt->execute();
+  $stmt->bind_result($title, $description, $current_price, $num_bids, $end_time);
+  $stmt->fetch();
+  $stmt->close();
+  $conn->close();
+
+  $end_time = new DateTime($end_time);
 
   // TODO: Note: Auctions that have ended may pull a different set of data,
   //       like whether the auction ended in a sale or was cancelled due
@@ -29,6 +37,24 @@
   // TODO: If the user has a session, use it to make a query to the database
   //       to determine if the user is already watching this item.
   //       For now, this is hardcoded.
+  if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+    $conn = new mysqli("localhost", "username", "password", "database");
+    if ($conn->connect_error) {
+      die("Connection failed: " . $conn->connect_error);
+    }
+
+    $sql = "SELECT COUNT(*) FROM watchlist WHERE user_id = ? AND item_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ii", $user_id, $item_id);
+    $stmt->execute();
+    $stmt->bind_result($count);
+    $stmt->fetch();
+    $stmt->close();
+    $conn->close();
+
+    $watching = ($count > 0);
+  }
   $has_session = true;
   $watching = false;
 ?>
@@ -71,7 +97,8 @@
     <p>
 <?php if ($now > $end_time): ?>
      This auction ended <?php echo(date_format($end_time, 'j M H:i')) ?>
-     <!-- TODO: Print the result of the auction here? -->
+         <!-- TODO: Print the result of the auction here? -->
+    <?php endif ?>
 <?php else: ?>
      Auction ends <?php echo(date_format($end_time, 'j M H:i') . $time_remaining) ?></p>  
     <p class="lead">Current bid: £<?php echo(number_format($current_price, 2)) ?></p>
