@@ -31,7 +31,7 @@
           <option selected value="all">All categories</option>
           <option value="fill">Fill me in</option>
           <option value="with">with options</option>
-          <option value="populated">populated from a database?</option>
+          <option value="populated">populated from a database? </option>
         </select>
       </div>
     </div>
