@@ -1,5 +1,9 @@
 <?php include_once("header.php")?>
 <?php require("utilities.php")?>
+<?php 
+ // Include database connection
+include 'test_connection.php';
+?>
 
 <div class="container">
 
@@ -20,28 +24,38 @@
               <i class="fa fa-search"></i>
             </span>
           </div>
-          <input type="text" class="form-control border-left-0" id="keyword" placeholder="Search for anything">
+          <input type="text" class="form-control border-left-0" id="keyword" name="keyword" 
+                 value="<?php echo isset($_GET['keyword']) ? htmlspecialchars($_GET['keyword']) : ''; ?>" 
+                 placeholder="Search for anything">
         </div>
       </div>
     </div>
     <div class="col-md-3 pr-0">
       <div class="form-group">
         <label for="cat" class="sr-only">Search within:</label>
-        <select class="form-control" id="cat">
-          <option selected value="all">All categories</option>
-          <option value="fill">Fill me in</option>
-          <option value="with">with options</option>
-          <option value="populated">populated from a database?</option>
+        <select class="form-control" id="cat" name="cat">
+          <option value="all" <?php echo (isset($_GET['cat']) && $_GET['cat'] == 'all') ? 'selected' : ''; ?>>All categories</option>
+	  <!-- make the categories option -->
+          <?php
+          $query_categories = "SELECT CategoryID, ItemCategoryName FROM category";
+          $result_categories = mysqli_query($conn, $query_categories);
+          while ($row = mysqli_fetch_assoc($result_categories)) {
+            $category_id = $row['CategoryID'];
+            $category_name = htmlspecialchars($row['ItemCategoryName']);
+            $selected = (isset($_GET['cat']) && $_GET['cat'] == $category_id) ? 'selected' : '';
+            echo "<option value=\"$category_id\" $selected>$category_name</option>";
+          }
+          ?>
         </select>
       </div>
     </div>
     <div class="col-md-3 pr-0">
       <div class="form-inline">
         <label class="mx-2" for="order_by">Sort by:</label>
-        <select class="form-control" id="order_by">
-          <option selected value="pricelow">Price (low to high)</option>
-          <option value="pricehigh">Price (high to low)</option>
-          <option value="date">Soonest expiry</option>
+        <select class="form-control" id="order_by" name="order_by">
+          <option value="name" <?php echo (isset($_GET['order_by']) && $_GET['order_by'] == 'name') ? 'selected' : ''; ?>>Name</option>
+          <option value="price_asc" <?php echo (isset($_GET['order_by']) && $_GET['order_by'] == 'price_asc') ? 'selected' : ''; ?>>Price (low to high)</option>
+          <option value="price_desc" <?php echo (isset($_GET['order_by']) && $_GET['order_by'] == 'price_desc') ? 'selected' : ''; ?>>Price (high to low)</option>
         </select>
       </div>
     </div>
@@ -58,26 +72,27 @@
 <?php
   // Retrieve these from the URL
   if (!isset($_GET['keyword'])) {
-    // TODO: Define behavior if a keyword has not been specified.
+     $keyword = ''; 
+     error_log("Keyword not set, using default.");// TODO: Define behavior if a keyword has not been specified.
   }
   else {
     $keyword = $_GET['keyword'];
   }
-
   if (!isset($_GET['cat'])) {
-    // TODO: Define behavior if a category has not been specified.
+    $category = ''; 
+    error_log("Category not set, using default.");// TODO: Define behavior if a category has not been specified.
   }
   else {
     $category = $_GET['cat'];
   }
   
   if (!isset($_GET['order_by'])) {
-    // TODO: Define behavior if an order_by value has not been specified.
+    $ordering = 'name';  // TODO: Define behavior if an order_by value has not been specified.
   }
   else {
     $ordering = $_GET['order_by'];
   }
-  
+
   if (!isset($_GET['page'])) {
     $curr_page = 1;
   }
@@ -91,43 +106,94 @@
   
   /* For the purposes of pagination, it would also be helpful to know the
      total number of results that satisfy the above query */
-  $num_results = 96; // TODO: Calculate me for real
-  $results_per_page = 10;
-  $max_page = ceil($num_results / $results_per_page);
+  
+$results_per_page = 2;
+
+  $offset = ($curr_page - 1) * $results_per_page;
+  $where_clauses = [];
+  if ($keyword != '') {
+    $where_clauses[] = "i.ItemName LIKE '%" . mysqli_real_escape_string($conn, $keyword) . "%'";
+  }
+  if (!empty($category) && $category != 'all') {
+    $where_clauses[] = "i.CategoryID = '" . mysqli_real_escape_string($conn, $category) . "'";
+  }
+  $where_sql = (count($where_clauses) > 0) ? 'WHERE ' . implode(' AND ', $where_clauses) : '';
+
+$order_by_sql = '';
+  if ($ordering == 'name') {
+    $order_by_sql = 'ORDER BY i.ItemName';
+  } elseif ($ordering == 'price_asc') {
+    $order_by_sql = 'ORDER BY i.CurrentBid ASC';
+  } elseif ($ordering == 'price_desc') {
+    $order_by_sql = 'ORDER BY i.CurrentBid DESC';
+  }
+
+ // caculate the num results for real
+  $query_count = "SELECT COUNT(*) AS total FROM item i $where_sql";
+  $result_count = mysqli_query($conn, $query_count);
+  $row_count = mysqli_fetch_assoc($result_count);
+  $num_results = $row_count['total'];
+
+ // Query the items
+$query = "SELECT i.ItemID, i.ItemName, i.ItemDescription, i.CurrentBid, i.ClosingDate, i.ItemPicture, c.ItemCategoryName, i.ClosingDate, b.BidAmount 
+          FROM item i 
+          LEFT JOIN category c ON i.CategoryID = c.CategoryID
+	  LEFT JOIN bid b ON i.ItemID = b.ItemID
+          $where_sql $order_by_sql 
+          LIMIT $offset, $results_per_page";
+$result = mysqli_query($conn, $query);
+ 
+$max_page = ceil($num_results / $results_per_page);
 ?>
+
+
+
 
 <div class="container mt-5">
 
-<!-- TODO: If result set is empty, print an informative message. Otherwise... -->
+  <!-- If the result is empty，print an informative message.-->
+  <?php if ($num_results == 0): ?>
+    <div class="alert alert-info">Sorry, we couldn't find any results for your searching.</div>
+  <?php else: ?>
+      <ul class="list-group">
+          <?php while ($row = mysqli_fetch_assoc($result)): ?>
+              <li class="list-group-item">
+                  <div class="d-flex align-items-center">
+                      <!-- Display the item picture -->
+                      <img src="<?php echo htmlspecialchars($row['ItemPicture'] ?? 'images/default.jpg'); ?>" 
+                           alt="<?php echo htmlspecialchars($row['ItemName'] ?? 'No Name'); ?>" 
+                           style="max-width: 150px; max-height: 150px; margin-right: 15px;">
+                      <div>
+                          <!-- Display item name as a clickable link -->
+                          <h5>
+                              <a href="item_details.php?item_id=<?php echo $row['ItemID']; ?>">
+                                  <?php echo htmlspecialchars($row['ItemName']); ?>
+                              </a>
+                          </h5>
+                          <p>Category: <?php echo htmlspecialchars($row['ItemCategoryName']); ?></p>
+                          <p>Description: <?php echo htmlspecialchars($row['ItemDescription']); ?></p>
+                          <p>Current Bid: £<?php echo htmlspecialchars(number_format($row['CurrentBid'], 2)); ?></p>
+			  <p>Bid Amount: <?php echo htmlspecialchars(($row['BidAmount'])); ?></p>
+			  <?php
+                            $current_time = new DateTime();
+                            $end_time = new DateTime($row['ClosingDate']);
+                            
+                            if ($current_time > $end_time): ?>
+                                <p class="text-danger">Auction has ended</p>
+                            <?php else: ?>
+                                <p>Current Bid: £<?php echo htmlspecialchars(number_format($row['CurrentBid'], 2)); ?></p>
+                            <?php endif; ?>
+                            <p>Auction End Time: <?php echo htmlspecialchars($row['ClosingDate']); ?></p>
+                      </div>
+                  </div>
+              </li>
+          <?php endwhile; ?>
+      </ul>
+  <?php endif; ?>
 
-<ul class="list-group">
 
-<!-- TODO: Use a while loop to print a list item for each auction listing
-     retrieved from the query -->
+</div>
 
-<?php
-  // Demonstration of what listings will look like using dummy data.
-  $item_id = "87021";
-  $title = "Dummy title";
-  $description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum eget rutrum ipsum. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Phasellus feugiat, ipsum vel egestas elementum, sem mi vestibulum eros, et facilisis dui nisi eget metus. In non elit felis. Ut lacus sem, pulvinar ultricies pretium sed, viverra ac sapien. Vivamus condimentum aliquam rutrum. Phasellus iaculis faucibus pellentesque. Sed sem urna, maximus vitae cursus id, malesuada nec lectus. Vestibulum scelerisque vulputate elit ut laoreet. Praesent vitae orci sed metus varius posuere sagittis non mi.";
-  $current_price = 30;
-  $num_bids = 1;
-  $end_date = new DateTime('2020-09-16T11:00:00');
-  
-  // This uses a function defined in utilities.php
-  print_listing_li($item_id, $title, $description, $current_price, $num_bids, $end_date);
-  
-  $item_id = "516";
-  $title = "Different title";
-  $description = "Very short description.";
-  $current_price = 13.50;
-  $num_bids = 3;
-  $end_date = new DateTime('2020-11-02T00:00:00');
-  
-  print_listing_li($item_id, $title, $description, $current_price, $num_bids, $end_date);
-?>
-
-</ul>
 
 <!-- Pagination for results listings -->
 <nav aria-label="Search results pages" class="mt-5">
