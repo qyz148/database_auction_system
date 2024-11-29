@@ -1,9 +1,10 @@
 <?php
 
-// TODO: Extract $_POST variables, check they're OK, and attempt to create
-// an account. Notify user of success/failure and redirect/give navigation 
-// options.
-include 'test_connection.php'; // Include database connection
+// 包含数据库连接
+include 'test_connection.php'; 
+
+// 开启会话管理
+session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // 提取并清理输入数据
@@ -51,25 +52,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         foreach ($errors as $error) {
             echo "<li>" . htmlspecialchars($error) . "</li>";
         }
-        echo "</ul>Go back to the registration page";
+        echo "</ul><a href='register.php'>Go back to the registration page</a>";
         exit;
     }
 
-    $sql = "INSERT INTO UserPersonalInformation (FirstName, LastName, UserEmail, UserPassword, AccountType)
-            VALUES ('$firstName', '$lastName', '$email', '$password', '$accountType')";
+    // 安全地哈希密码
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    echo $hashedPassword; // 注册时输出哈希以验证生成是否正常
 
-    if ($conn->query($sql) === TRUE) {
+
+    // 使用预处理语句插入数据以防止 SQL 注入
+    $stmt = $conn->prepare("INSERT INTO UserPersonalInformation (FirstName, LastName, UserEmail, UserPassword, AccountType) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssss", $firstName, $lastName, $email, $hashedPassword, $accountType);
+
+    if ($stmt->execute()) {
         // 自动登录：将用户信息保存到会话中
+        $_SESSION['logged_in'] = true;
         $_SESSION['user_email'] = $email;
         $_SESSION['user_first_name'] = $firstName;
         $_SESSION['user_last_name'] = $lastName;
+        $_SESSION['account_type'] = $accountType;
 
-        // 重定向到主菜单页面
-        header("Location: login_result.php");
+        // 重定向到浏览页面
+        header("Location: browse.php");
         exit;
     } else {
-        echo "<h3>Error:</h3> " . $conn->error . "<br>Go back to the registration page";
+        echo "<h3>Error:</h3> " . $stmt->error . "<br><a href='register.php'>Go back to the registration page</a>";
     }
+
+    $stmt->close();
 }
 
 // 关闭数据库连接
