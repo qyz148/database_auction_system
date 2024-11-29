@@ -56,14 +56,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    // 安全地哈希密码
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-    echo $hashedPassword; // 注册时输出哈希以验证生成是否正常
-
 
     // 使用预处理语句插入数据以防止 SQL 注入
-    $stmt = $conn->prepare("INSERT INTO UserPersonalInformation (FirstName, LastName, UserEmail, UserPassword, AccountType) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssss", $firstName, $lastName, $email, $hashedPassword, $accountType);
+    $stmt = $conn->prepare("INSERT INTO userPersonalInformation (FirstName, LastName, UserEmail, UserPassword, AccountType) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssss", $firstName, $lastName, $email, $password, $accountType);
 
     if ($stmt->execute()) {
         // 自动登录：将用户信息保存到会话中
