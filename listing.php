@@ -1,6 +1,6 @@
-<?php include_once("header.php")?>
-<?php require("utilities.php")?>
-<?php include("test_connection.php")?>
+<?php include_once("header.php") ?>
+<?php require("utilities.php") ?>
+<?php include("test_connection.php") ?>
 
 <?php
   // Get info from the URL:
@@ -12,7 +12,10 @@
     die("Connection failed: " . $conn->connect_error);
   }
 
-  $sql = "SELECT ItemName AS title, ItemDescription AS description, CurrentBid AS current_price, ClosingDate AS end_time FROM item WHERE ItemID = ?";
+  // Fetch item details from the database
+  $sql = "SELECT ItemName AS title, ItemDescription AS description, CurrentBid AS current_price, ClosingDate AS end_time 
+          FROM item 
+          WHERE ItemID = ?";
   $stmt = $conn->prepare($sql);
   $stmt->bind_param("i", $item_id);
   $stmt->execute();
@@ -29,102 +32,61 @@
   
   // Calculate time to auction end:
   $now = new DateTime();
-  
   if ($now < $end_time) {
     $time_to_end = date_diff($now, $end_time);
     $time_remaining = ' (in ' . display_time_remaining($time_to_end) . ')';
   }
-  
+
   // TODO: If the user has a session, use it to make a query to the database
   //       to determine if the user is already watching this item.
   //       For now, this is hardcoded.
-  if (isset($_SESSION['user_id'])) {
-    $user_id = $_SESSION['user_id'];
-    $conn = new mysqli("localhost", "username", "password", "database");
-    if ($conn->connect_error) {
-      die("Connection failed: " . $conn->connect_error);
-    }
-
-    $sql = "SELECT COUNT(*) FROM watchlist WHERE user_id = ? AND item_id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ii", $user_id, $item_id);
-    $stmt->execute();
-    $stmt->bind_result($count);
-    $stmt->fetch();
-    $stmt->close();
-    $conn->close();
-
-    $watching = ($count > 0);
-  }
-  $has_session = true;
-  $watching = false;
+  $has_session = true; // Simulate session for development
+  $watching = false;   // Simulate watchlist status for development
 ?>
-
 
 <div class="container">
 
 <div class="row"> <!-- Row #1 with auction title + watch button -->
   <div class="col-sm-8"> <!-- Left col -->
-    <h2 class="my-3"><?php echo($title); ?></h2>
-  </div>
-  <div class="col-sm-4 align-self-center"> <!-- Right col -->
-<?php
-  /* The following watchlist functionality uses JavaScript, but could
-     just as easily use PHP as in other places in the code */
-  if ($now < $end_time):
-?>
-    <div id="watch_nowatch" <?php if ($has_session && $watching) echo('style="display: none"');?> >
-      <button type="button" class="btn btn-outline-secondary btn-sm" onclick="addToWatchlist()">+ Add to watchlist</button>
-    </div>
-    <div id="watch_watching" <?php if (!$has_session || !$watching) echo('style="display: none"');?> >
-      <button type="button" class="btn btn-success btn-sm" disabled>Watching</button>
-      <button type="button" class="btn btn-danger btn-sm" onclick="removeFromWatchlist()">Remove watch</button>
-    </div>
-<?php endif /* Print nothing otherwise */ ?>
+    <h2 class="my-3"><?php echo htmlspecialchars($title); ?></h2>
   </div>
 </div>
 
 <div class="row"> <!-- Row #2 with auction description + bidding info -->
   <div class="col-sm-8"> <!-- Left col with item info -->
-
     <div class="itemDescription">
-    <?php echo($description); ?>
+      <?php echo nl2br(htmlspecialchars($description)); ?>
     </div>
-
   </div>
 
   <div class="col-sm-4"> <!-- Right col with bidding info -->
-
     <p>
-    <?php if ($now > $end_time): ?>
-    This auction ended <?php echo(date_format($end_time, 'j M H:i')) ?>
+      <?php if ($now > $end_time): ?>
+        This auction ended <?php echo(date_format($end_time, 'j M H:i')); ?>
         <!-- TODO: Print the result of the auction here? -->
-<?php else: ?>
-    Auction ends <?php echo(date_format($end_time, 'j M H:i') . $time_remaining) ?></p>  
-    <p class="lead">Current bid: £<?php echo(number_format($current_price, 2)) ?></p>
+      <?php else: ?>
+        Auction ends <?php echo(date_format($end_time, 'j M H:i') . $time_remaining); ?></p>
+        <p class="lead">Current bid: £<?php echo(number_format($current_price, 2)); ?></p>
 
-    <!-- Bidding form -->
-    <form method="POST" action="place_bid.php">
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text">£</span>
-        </div>
-        <input type="number" class="form-control" id="bid">
-      </div>
-      <button type="submit" class="btn btn-primary form-control">Place bid</button>
-    </form>
-<?php endif; ?>
-
-
-  
+        <!-- Bidding form -->
+        <form method="POST" action="place_bid.php">
+          <input type="hidden" name="item_id" value="<?php echo htmlspecialchars($item_id); ?>">
+          <input type="hidden" name="user_id" value="1"> <!-- Replace with the actual logged-in user's ID -->
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text">£</span>
+            </div>
+            <input type="number" name="bid_amount" class="form-control" step="0.01" min="0" required>
+          </div>
+          <button type="submit" class="btn btn-primary form-control">Place bid</button>
+        </form>
+      <?php endif; ?>
   </div> <!-- End of right col with bidding info -->
-
 </div> <!-- End of row #2 -->
 
+</div> <!-- End of container -->
 
-
-<?php include_once("footer.php")?>
-
+<?php include_once("footer.php") ?>
 
 <script> 
 // JavaScript functions: addToWatchlist and removeFromWatchlist.
