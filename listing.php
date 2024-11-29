@@ -7,16 +7,16 @@
   $item_id = $_GET['item_id'];
 
   // TODO: Use item_id to make a query to the database.
-  $conn = new mysqli("localhost", "username", "password", "database");
+  $conn = new mysqli("localhost", "root", "", "auction_system");
   if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
   }
 
-  $sql = "SELECT title, description, current_price, num_bids, end_time FROM items WHERE item_id = ?";
+  $sql = "SELECT ItemName AS title, ItemDescription AS description, CurrentBid AS current_price, ClosingDate AS end_time FROM item WHERE ItemID = ?";
   $stmt = $conn->prepare($sql);
   $stmt->bind_param("i", $item_id);
   $stmt->execute();
-  $stmt->bind_result($title, $description, $current_price, $num_bids, $end_time);
+  $stmt->bind_result($title, $description, $current_price, $end_time);
   $stmt->fetch();
   $stmt->close();
   $conn->close();
@@ -96,12 +96,11 @@
   <div class="col-sm-4"> <!-- Right col with bidding info -->
 
     <p>
-<?php if ($now > $end_time): ?>
-     This auction ended <?php echo(date_format($end_time, 'j M H:i')) ?>
-         <!-- TODO: Print the result of the auction here? -->
-    <?php endif ?>
+    <?php if ($now > $end_time): ?>
+    This auction ended <?php echo(date_format($end_time, 'j M H:i')) ?>
+        <!-- TODO: Print the result of the auction here? -->
 <?php else: ?>
-     Auction ends <?php echo(date_format($end_time, 'j M H:i') . $time_remaining) ?></p>  
+    Auction ends <?php echo(date_format($end_time, 'j M H:i') . $time_remaining) ?></p>  
     <p class="lead">Current bid: £<?php echo(number_format($current_price, 2)) ?></p>
 
     <!-- Bidding form -->
@@ -110,11 +109,12 @@
         <div class="input-group-prepend">
           <span class="input-group-text">£</span>
         </div>
-	    <input type="number" class="form-control" id="bid">
+        <input type="number" class="form-control" id="bid">
       </div>
       <button type="submit" class="btn btn-primary form-control">Place bid</button>
     </form>
-<?php endif ?>
+<?php endif; ?>
+
 
   
   </div> <!-- End of right col with bidding info -->
