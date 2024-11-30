@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 28, 2024 at 09:56 PM
+-- Generation Time: Nov 30, 2024 at 04:25 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `acution_system`
+-- Database: `auction_system`
 --
 
 -- --------------------------------------------------------
@@ -88,6 +88,16 @@ CREATE TABLE `category` (
   `ItemCategoryName` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `category`
+--
+
+INSERT INTO `category` (`CategoryID`, `ItemCategoryName`) VALUES
+('item_1', 'chair'),
+('item_2', 'Display Card'),
+('item_3', 'CPU'),
+('item_4', 'Computer Monitor');
+
 -- --------------------------------------------------------
 
 --
@@ -128,7 +138,7 @@ CREATE TABLE `item` (
   `ItemDescription` text DEFAULT NULL,
   `RemainingTime` time DEFAULT NULL,
   `StartingPrice` varchar(20) DEFAULT NULL,
-  `ClosingDate` date DEFAULT NULL,
+  `ClosingDate` datetime DEFAULT NULL,
   `CurrentBid` varchar(20) DEFAULT NULL,
   `MinimumBid` varchar(20) DEFAULT NULL,
   `ItemPicture` varchar(255) DEFAULT NULL

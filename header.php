@@ -4,8 +4,8 @@
   // ONLY after the user's login credentials have been verified via a 
   // database query.
   session_start();
-  $_SESSION['logged_in'];
-  $_SESSION['account_type'];
+  // $_SESSION['logged_in'];
+  // $_SESSION['account_type'];
 ?>
 
 
@@ -22,7 +22,7 @@
   <!-- Custom CSS file -->
   <link rel="stylesheet" href="css/custom.css">
 
-  <title>[My Auction Site] <!--CHANGEME!--></title>
+  <title>不知道</title>
 </head>
 
 
@@ -34,9 +34,13 @@
   <ul class="navbar-nav ml-auto">
     <li class="nav-item">
     
+
 <?php
   // Displays either login or logout on the right, depending on user's
   // current status (session).
+  echo $_SESSION['user_id'];
+  echo "<br>";
+  echo $_SESSION['account_type'];
   if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true) {
     echo '<a class="nav-link" href="logout.php">Logout</a>';
   }
