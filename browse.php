@@ -166,14 +166,14 @@ $max_page = ceil($num_results / $results_per_page);
                       <div>
                           <!-- Display item name as a clickable link -->
                           <h5>
-                              <a href="item_details.php?item_id=<?php echo $row['ItemID']; ?>">
+                              <a href="listing.php?item_id=<?php echo $row['ItemID']; ?>">
                                   <?php echo htmlspecialchars($row['ItemName']); ?>
                               </a>
                           </h5>
                           <p>Category: <?php echo htmlspecialchars($row['ItemCategoryName']); ?></p>
                           <p>Description: <?php echo htmlspecialchars($row['ItemDescription']); ?></p>
                           <p>Current Bid: £<?php echo htmlspecialchars(number_format($row['CurrentBid'], 2)); ?></p>
-			  <p>Bid Amount: <?php echo htmlspecialchars(($row['BidAmount'])); ?></p>
+			  <p>Bid Amount: <?php echo htmlspecialchars(is_null($row['BidAmount'])?'':$row['BidAmount']); ?></p>
 			  <?php
                             $current_time = new DateTime();
                             $end_time = new DateTime($row['ClosingDate']);
