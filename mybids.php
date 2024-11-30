@@ -14,10 +14,25 @@
   
   
   // TODO: Check user's credentials (cookie/session).
+  session_start();
+  if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit();
+  }
   
   // TODO: Perform a query to pull up the auctions they've bidded on.
+  require('database.php');
+  $user_id = $_SESSION['user_id'];
+  $query = "SELECT * FROM bids WHERE user_id = ?";
+  $stmt = $conn->prepare($query);
+  $stmt->bind_param('i', $user_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
   
   // TODO: Loop through results and print them out as list items.
+  while ($row = $result->fetch_assoc()) {
+    echo "<li>Auction ID: " . $row['auction_id'] . " - Bid Amount: " . $row['bid_amount'] . "</li>";
+  }
   
 ?>
 
