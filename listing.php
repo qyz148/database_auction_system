@@ -23,14 +23,15 @@
   $stmt->close();
   $conn->close();
 
-  $end_time = new DateTime($end_time);
 
   // TODO: Note: Auctions that have ended may pull a different set of data,
   //       like whether the auction ended in a sale or was cancelled due
   //       to lack of high-enough bids. Or maybe not.
   
   // Calculate time to auction end:
-  $now = new DateTime();
+  date_default_timezone_set('UTC');
+  $end_time = new DateTime($end_time);
+  $now = new DateTime("now");
   if ($now < $end_time) {
     $time_to_end = date_diff($now, $end_time);
     $time_remaining = ' (in ' . display_time_remaining($time_to_end) . ')';
@@ -61,10 +62,13 @@
   <div class="col-sm-4"> <!-- Right col with bidding info -->
     <p>
       <?php if ($now > $end_time): ?>
-        This auction ended <?php echo(date_format($end_time, 'j M H:i')); ?>
+        This auction ended <?php echo(date_format($end_time, 'j M H:i:s')); ?>
         <!-- TODO: Print the result of the auction here? -->
       <?php else: ?>
-        Auction ends <?php echo(date_format($end_time, 'j M H:i') . $time_remaining); ?></p>
+        Auction ends <?php echo(date_format($end_time, 'j M H:i:s') . $time_remaining); ?>
+        <?php echo(auctionTImer(date_format($end_time, 'Y-m-d H:i:s'))) ?>
+    </p>
+
         <p class="lead">Current bid: £<?php echo(number_format($current_price, 2)); ?></p>
 
         <!-- Bidding form -->

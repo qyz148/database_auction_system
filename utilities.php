@@ -135,6 +135,42 @@ function print_listing_li($item_id, $title, $desc, $price, $num_bids, $end_time)
     ');
 }
 
+function auctionTImer($endTime){
+    echo('
+        <div id="auctionTimer"></div>
+    ');
+
+    // JavaScript logic for dynamic countdown
+    echo('
+    <script>
+        (function() {
+            var endTime = new Date("' . $endTime . '").getTime();
+            var countdownElement = document.getElementById("auctionTimer");
+
+            function updateCountdown() {
+                var now = new Date().getTime();
+                var timeRemaining = endTime - now;
+                console.log(new Date())
+                if (timeRemaining > 0) {    
+                    var days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+                    var hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    var minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                    var seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+                    // Update the display with the remaining time
+                    countdownElement.innerHTML = `Auction ends on ' . $endTime . '<br> ${days}d ${hours}h ${minutes}m ${seconds}s`;
+                } else {
+                    countdownElement.innerHTML = `This auction has ended on (' . $endTime . ')`;
+                    clearInterval(timer);
+                }
+            }
+
+            var timer = setInterval(updateCountdown, 1000);
+            updateCountdown(); // Call immediately to set the initial value
+        })();
+    </script>
+    ');
+}
 
 function uuid4() {
   /* 32 random HEX + space for 4 hyphens */

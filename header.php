@@ -34,9 +34,13 @@
   <ul class="navbar-nav ml-auto">
     <li class="nav-item">
     
+
 <?php
   // Displays either login or logout on the right, depending on user's
   // current status (session).
+  echo $_SESSION['user_id'];
+  echo "<br>";
+  echo $_SESSION['account_type'];
   if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true) {
     echo '<a class="nav-link" href="logout.php">Logout</a>';
   }

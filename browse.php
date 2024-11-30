@@ -166,7 +166,7 @@ $max_page = ceil($num_results / $results_per_page);
                       <div>
                           <!-- Display item name as a clickable link -->
                           <h5>
-                              <a href="item_details.php?item_id=<?php echo $row['ItemID']; ?>">
+                              <a href="listing.php?item_id=<?php echo $row['ItemID']; ?>">
                                   <?php echo htmlspecialchars($row['ItemName']); ?>
                               </a>
                           </h5>
