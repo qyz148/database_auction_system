@@ -1,5 +1,6 @@
-<?php include_once("header.php")?>
+<?php include("header.php")?>
 <?php require("utilities.php")?>
+<?php require("test_connection.php")?>
 
 <div class="container">
 
@@ -29,8 +30,8 @@
         <label for="cat" class="sr-only">Search within:</label>
         <select class="form-control" id="cat">
           <option selected value="all">All categories</option>
-          <option value="fill">Fill me in</option>
-          <option value="with">with options</option>
+          <option value="fill">Furniture</option>
+          <option value="with">Booking</option>
           <option value="populated">populated from a database?</option>
         </select>
       </div>
