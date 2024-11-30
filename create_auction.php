@@ -43,10 +43,11 @@
           <label for="auctionCategory" class="col-sm-2 col-form-label text-right">Category</label>
           <div class="col-sm-10">
             <select class="form-control" name="auctionCategory" id="auctionCategory">
-              <option selected>Choose...</option>
-              <option value="fill">Fill me in</option>
-              <option value="with">with options</option>
-              <option value="populated">populated from a database?</option>
+              <!-- <option selected>Choose...</option> -->
+              <option selected value="Display_Card">Display Card</option>
+              <option value="Computer_Monitor">Computer Monitor</option>
+              <option value="Chair">chair</option>
+              <option value="CPU">cpu</option>
             </select>
             <small id="categoryHelp" class="form-text text-muted"><span class="text-danger">* Required.</span> Select a category for this item.</small>
           </div>

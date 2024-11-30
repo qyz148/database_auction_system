@@ -34,7 +34,7 @@ if (isset($_POST['email']) && isset($_POST['password'])) {
             $_SESSION['logged_in']= true;
             $_SESSION['email'] = $row['UserEmail'];
             $_SESSION['account_type'] = $row['AccountType'];
-
+            $_SESSION['user_id'] = $row['UserID'];
             echo '<div class="text-center">登录成功！正在重定向到主页...</div>';
             header("refresh:5;url=index.php");
         } else {

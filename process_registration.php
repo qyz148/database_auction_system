@@ -68,6 +68,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['user_first_name'] = $firstName;
         $_SESSION['user_last_name'] = $lastName;
         $_SESSION['account_type'] = $accountType;
+        $stmt = 
+            "SELECT UserID FROM userpersonalinformation WHERE UserEmail = '" . $email . "' and FirstName = '" .$firstName."' and LastName = '" .$lastName. "' and UserPassword = '" .$password."';";
+        
+        $query_result = $conn->query($stmt);
+        $UserID = "";
+        while($row = $query_result->fetch_assoc()){
+            $UserID = $row["UserID"];
+        }
+        $_SESSION['user_id'] = $UserID;
 
         // 重定向到浏览页面
         header("Location: browse.php");

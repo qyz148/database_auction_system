@@ -1,5 +1,6 @@
 <?php include("header.php"); ?>
 <?php include_once("test_connection.php"); ?>
+<?php include("utilities.php"); ?>
 
 <div class="container my-5">
 
@@ -16,11 +17,12 @@ $auctionReservePrice = isset($_POST['auctionReservePrice']) && $_POST['auctionRe
 $auctionEndDate = isset($_POST['auctionEndDate']) ? trim($_POST['auctionEndDate']) : '';
 
 $errors = [];
-
 if (empty($auctionTitle)) $errors[] = 'The title of the auction is required.';
 if (empty($auctionDetails)) $errors[] = 'Details about the auction are required.';
 if (empty($auctionCategory)) $errors[] = 'A valid category must be selected.';
 if ($auctionStartPrice <= 0) $errors[] = 'Starting price must be greater than 0.';
+// set timezone to UTC before using time() function
+date_default_timezone_set('UTC');
 if (empty($auctionEndDate) || strtotime($auctionEndDate) <= time()) {
     $errors[] = 'End date must be valid and in the future.';
 }
@@ -33,21 +35,51 @@ if (!empty($errors)) {
     exit();
 }
 
-// 插入到数据库的逻辑
+
+$UserID = $_SESSION['user_id']; 
+$auctionStatus = 'Active'; 
+$startingTime = date('Y-m-d H:i:s'); 
+$_null = null;
+
+// select catergoryID
+$stmt = 
+    "SELECT CategoryID FROM Category WHERE ItemCategoryName = '" . $auctionCategory . "';";
+
+$query_result = $conn->query($stmt);
+$categoryID = "";
+while($row = $query_result->fetch_assoc()){
+    $categoryID = $row["CategoryID"];
+}
+
+// insert into item
 $stmt = $conn->prepare(
-    "INSERT INTO Auction (UserID, DateOfPurchase, ReservePrice, PurchasePrice, AuctionStatus, AuctionStartingTime) 
-     VALUES (?, NULL, ?, ?, ?, ?)"
+    "INSERT INTO Item (ItemID, UserID, CategoryID, ItemName, ItemDescription, StartingPrice, ClosingDate) VALUES (?,?,?,?,?,?,?);"
+);
+$itemID = uuid4();
+$stmt->bind_param(
+    "sssssss",
+    $itemID,
+    $UserID,
+    $categoryID,
+    $auctionTitle,
+    $auctionDetails,
+    $auctionStartPrice,
+    $auctionEndDate
+);
+$stmt->execute();
+
+$auctionID = uuid4();
+$stmt = $conn->prepare(
+    "INSERT INTO Auction (AuctionID, UserID, itemID, DateOfPurchase, ReservePrice, PurchasePrice, AuctionStatus, AuctionStartingTime) 
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
 );
 
-// 设置绑定变量的值
-$UserID = $_SESSION['user_id']; // 从会话中获取用户 ID
-$auctionStatus = 'Active'; // 默认拍卖状态为 "Active"
-$startingTime = date('Y-m-d H:i:s'); // 当前时间
-
-// 绑定参数
 $stmt->bind_param(
-    "iddss",
+    "ssssssss",
+    $auctionID,
     $UserID,
+    $itemID,
+    $_null,
     $auctionReservePrice,
     $auctionStartPrice,
     $auctionStatus,
@@ -56,7 +88,7 @@ $stmt->bind_param(
 
 if ($stmt->execute()) {
     $newAuctionID = $stmt->insert_id; 
-    echo('<div class="text-center alert alert-success">Auction successfully created! View your new listing.</div>');
+    echo('<div class="text-center">Auction successfully created! <a href="mylistings.php">View your new listing.</a></div>');
 } else {
     echo('<div class="alert alert-danger">Failed to create auction: ' . htmlspecialchars($stmt->error) . '</div>');
 }
@@ -64,7 +96,7 @@ if ($stmt->execute()) {
 $stmt->close();
 $conn->close();
 
-echo('<div class="text-center">Auction successfully created! <a href="mylistings.php">View your new listing.</a></div>');
+
 
 
 ?>

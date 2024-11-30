@@ -4,8 +4,8 @@
   // ONLY after the user's login credentials have been verified via a 
   // database query.
   session_start();
-  $_SESSION['logged_in'];
-  $_SESSION['account_type'];
+  // $_SESSION['logged_in'];
+  // $_SESSION['account_type'];
 ?>
 
 
@@ -22,7 +22,7 @@
   <!-- Custom CSS file -->
   <link rel="stylesheet" href="css/custom.css">
 
-  <title>[My Auction Site] <!--CHANGEME!--></title>
+  <title>不知道</title>
 </head>
 
 
