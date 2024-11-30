@@ -84,6 +84,15 @@
             <small id="endDateHelp" class="form-text text-muted"><span class="text-danger">* Required.</span> Day for the auction to end.</small>
           </div>
         </div>
+        <div class="form-group row">
+          <label for="auctionImage" class="col-sm-2 col-form-label text-right">Upload Image</label>
+          <div class="col-sm-10">
+            <input type="file" class="form-control" name="auctionImage" id="auctionImage" accept="image/*">
+              <small id="imageHelp" class="form-text text-muted">
+                Optional. Upload a picture of the item to attract more bidders.
+              </small>
+          </div>
+        </div>
         <button type="submit" class="btn btn-primary form-control">Create Auction</button>
       </form>
     </div>

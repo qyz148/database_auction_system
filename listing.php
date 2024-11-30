@@ -85,6 +85,41 @@
 
 </div> <!-- End of container -->
 
+<?php
+// Fetch bid records for this item
+$bid_records = get_bid_records($item_id);
+?>
+
+<div class="container">
+  <!-- Bid History Section -->
+  <div class="row">
+    <div class="col-sm-8">
+      <h4 class="my-4">Bid History</h4>
+      <?php if (!empty($bid_records)): ?>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Bid Amount</th>
+              <th scope="col">Time of Bid</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php foreach ($bid_records as $bid): ?>
+              <tr>
+                <td>£<?php echo number_format((float)$bid['BidAmount'], 2); ?></td>
+                <td><?php echo date('Y-m-d H:i:s', strtotime($bid['TimeOfBid'])); ?></td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      <?php else: ?>
+        <p>No bids have been placed yet.</p>
+      <?php endif; ?>
+    </div>
+  </div>
+</div>
+
+
 <?php include_once("footer.php") ?>
 
 <script> 

@@ -35,6 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } elseif ($bid_amount <= $current_bid) {
             // Check if the bid amount is higher than the current bid
             echo "Your bid must be higher than the current bid.";
+            header("refresh:2;mylistings.php");
         } else {
             // Insert the new bid into the bid table
             $sql = "INSERT INTO bid (BidID, UserID, ItemID, BidAmount, TimeOfBid) VALUES (?, ?, ?, ?, NOW())";
@@ -51,8 +52,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $update_stmt->close();
 
                 echo "Bid placed successfully!";
+                header("refresh:2;mylistings.php");
             } else {
                 echo "Failed to place bid. Please try again.";
+                header("refresh:2;mylistings.php");
+                
+
             }
             $stmt->close();
         }
