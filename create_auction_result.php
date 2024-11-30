@@ -51,20 +51,51 @@ while($row = $query_result->fetch_assoc()){
     $categoryID = $row["CategoryID"];
 }
 
+// 设置允许的文件类型和上传目录
+$uploadDir = "uploads/"; // 目标目录
+$allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
+$imagePath = null; // 初始化变量，用于保存图片路径
+
+if (isset($_FILES['auctionImage']) && $_FILES['auctionImage']['error'] === UPLOAD_ERR_OK) {
+    $fileTmpPath = $_FILES['auctionImage']['tmp_name'];
+    $fileName = $_FILES['auctionImage']['name'];
+    $fileSize = $_FILES['auctionImage']['size'];
+    $fileType = $_FILES['auctionImage']['type'];
+    $fileExt = pathinfo($fileName, PATHINFO_EXTENSION);
+
+    // 验证文件类型
+    if (in_array($fileType, $allowedTypes)) {
+        // 生成唯一文件名并移动文件
+        $newFileName = uniqid('img_', true) . '.' . $fileExt;
+        $destPath = $uploadDir . $newFileName;
+
+        if (move_uploaded_file($fileTmpPath, $destPath)) {
+            $imagePath = $destPath; // 保存文件路径
+        } else {
+            echo '<div class="alert alert-danger">Failed to move the uploaded file.</div>';
+        }
+    } else {
+        echo '<div class="alert alert-danger">Invalid file type. Please upload a JPG, PNG, or GIF image.</div>';
+    }
+}
+
+
 // insert into item
 $stmt = $conn->prepare(
-    "INSERT INTO Item (ItemID, UserID, CategoryID, ItemName, ItemDescription, StartingPrice, ClosingDate) VALUES (?,?,?,?,?,?,?);"
+    "INSERT INTO Item (ItemID, UserID, CategoryID, ItemName, ItemDescription, StartingPrice, ClosingDate, CurrentBid) VALUES (?,?,?,?,?,?,?,?);"
 );
 $itemID = uuid4();
 $stmt->bind_param(
-    "sssssss",
+    "ssssssss",
     $itemID,
     $UserID,
     $categoryID,
     $auctionTitle,
     $auctionDetails,
     $auctionStartPrice,
-    $auctionEndDate
+    $auctionEndDate,
+    $auctionStartPrice
 );
 $stmt->execute();
 

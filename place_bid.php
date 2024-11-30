@@ -1,15 +1,15 @@
 <?php
 include("test_connection.php");
-
+include("utilities.php");
 // TODO: Extract $_POST variables, check they're OK, and attempt to make a bid.
 // Notify user of success/failure and redirect/give navigation options.
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Extract and sanitize POST variables
-    $item_id = filter_input(INPUT_POST, 'item_id', FILTER_SANITIZE_NUMBER_INT);
-    $user_id = filter_input(INPUT_POST, 'user_id', FILTER_SANITIZE_NUMBER_INT);
+    $item_id = filter_input(INPUT_POST, 'item_id', FILTER_SANITIZE_ENCODED);
+    $user_id = filter_input(INPUT_POST, 'user_id', FILTER_SANITIZE_ENCODED);
     $bid_amount = filter_input(INPUT_POST, 'bid_amount', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-
+    
     // Check if the variables are valid
     if ($item_id && $user_id && $bid_amount && $bid_amount > 0) {
         // Connect to the database
@@ -26,7 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->bind_result($current_bid, $closing_date);
         $stmt->fetch();
         $stmt->close();
-
         $now = new DateTime();
         $closing_date_time = new DateTime($closing_date);
 
@@ -36,11 +35,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } elseif ($bid_amount <= $current_bid) {
             // Check if the bid amount is higher than the current bid
             echo "Your bid must be higher than the current bid.";
+            header("refresh:2;mylistings.php");
         } else {
             // Insert the new bid into the bid table
-            $sql = "INSERT INTO bid (UserID, ItemID, BidAmount, TimeOfBid) VALUES (?, ?, ?, NOW())";
+            $sql = "INSERT INTO bid (BidID, UserID, ItemID, BidAmount, TimeOfBid) VALUES (?, ?, ?, ?, NOW())";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("iid", $user_id, $item_id, $bid_amount);
+            $bidID = uuid4();
+            $stmt->bind_param("ssss", $bidID, $user_id, $item_id, $bid_amount);
 
             if ($stmt->execute()) {
                 // Update the CurrentBid in the item table
@@ -51,8 +52,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $update_stmt->close();
 
                 echo "Bid placed successfully!";
+                header("refresh:2;mylistings.php");
             } else {
                 echo "Failed to place bid. Please try again.";
+                header("refresh:2;mylistings.php");
+                
+
             }
             $stmt->close();
         }

@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Nov 27, 2024 at 03:17 AM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- Host: 127.0.0.1
+-- Generation Time: Nov 30, 2024 at 04:25 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,11 +24,11 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Address`
+-- Table structure for table `address`
 --
 
-CREATE TABLE `Address` (
-  `AddressID` int(11) NOT NULL,
+CREATE TABLE `address` (
+  `AddressID` varchar(10) NOT NULL,
   `AddressStreet` varchar(20) NOT NULL,
   `City` varchar(20) NOT NULL,
   `Postcode` varchar(20) NOT NULL
@@ -37,11 +37,11 @@ CREATE TABLE `Address` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `AdminLogin`
+-- Table structure for table `adminlogin`
 --
 
-CREATE TABLE `AdminLogin` (
-  `AdminID` int(11) NOT NULL,
+CREATE TABLE `adminlogin` (
+  `AdminID` varchar(10) NOT NULL,
   `AdminPassword` varchar(20) NOT NULL,
   `AdminUsername` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -49,13 +49,13 @@ CREATE TABLE `AdminLogin` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Auction`
+-- Table structure for table `auction`
 --
 
-CREATE TABLE `Auction` (
-  `AuctionID` int(11) NOT NULL,
-  `UserID` int(11) NOT NULL,
-  `ItemID` int(11) NOT NULL,
+CREATE TABLE `auction` (
+  `AuctionID` varchar(10) NOT NULL,
+  `UserID` varchar(10) NOT NULL,
+  `ItemID` varchar(10) NOT NULL,
   `DateOfPurchase` date DEFAULT NULL,
   `PurchasePrice` varchar(20) DEFAULT NULL,
   `AuctionStatus` varchar(20) DEFAULT NULL,
@@ -66,13 +66,13 @@ CREATE TABLE `Auction` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Bid`
+-- Table structure for table `bid`
 --
 
-CREATE TABLE `Bid` (
-  `BidID` int(11) NOT NULL,
-  `UserID` int(11) DEFAULT NULL,
-  `ItemID` int(11) DEFAULT NULL,
+CREATE TABLE `bid` (
+  `BidID` varchar(10) NOT NULL,
+  `UserID` varchar(10) DEFAULT NULL,
+  `ItemID` varchar(10) DEFAULT NULL,
   `BidAmount` varchar(20) DEFAULT NULL,
   `TimeOfBid` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -80,23 +80,33 @@ CREATE TABLE `Bid` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Category`
+-- Table structure for table `category`
 --
 
-CREATE TABLE `Category` (
-  `CategoryID` int(11) NOT NULL,
+CREATE TABLE `category` (
+  `CategoryID` varchar(10) NOT NULL,
   `ItemCategoryName` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `category`
+--
+
+INSERT INTO `category` (`CategoryID`, `ItemCategoryName`) VALUES
+('item_1', 'chair'),
+('item_2', 'Display Card'),
+('item_3', 'CPU'),
+('item_4', 'Computer Monitor');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Commission`
+-- Table structure for table `commission`
 --
 
-CREATE TABLE `Commission` (
-  `CommissionID` int(11) NOT NULL,
-  `AuctionID` int(11) NOT NULL,
+CREATE TABLE `commission` (
+  `CommissionID` varchar(10) NOT NULL,
+  `AuctionID` varchar(10) NOT NULL,
   `PurchasePrice` varchar(20) DEFAULT NULL,
   `CommissionFee` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -104,12 +114,12 @@ CREATE TABLE `Commission` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Inbox`
+-- Table structure for table `inbox`
 --
 
-CREATE TABLE `Inbox` (
-  `InboxID` int(11) NOT NULL,
-  `UserID` int(11) DEFAULT NULL,
+CREATE TABLE `inbox` (
+  `InboxID` varchar(10) NOT NULL,
+  `UserID` varchar(10) DEFAULT NULL,
   `MessageContent` text NOT NULL,
   `MessageType` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -117,18 +127,18 @@ CREATE TABLE `Inbox` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Item`
+-- Table structure for table `item`
 --
 
-CREATE TABLE `Item` (
-  `ItemID` int(11) NOT NULL,
-  `UserID` int(11) DEFAULT NULL,
-  `CategoryID` int(11) DEFAULT NULL,
+CREATE TABLE `item` (
+  `ItemID` varchar(10) NOT NULL,
+  `UserID` varchar(10) DEFAULT NULL,
+  `CategoryID` varchar(10) DEFAULT NULL,
   `ItemName` varchar(20) NOT NULL,
   `ItemDescription` text DEFAULT NULL,
   `RemainingTime` time DEFAULT NULL,
   `StartingPrice` varchar(20) DEFAULT NULL,
-  `ClosingDate` date DEFAULT NULL,
+  `ClosingDate` datetime DEFAULT NULL,
   `CurrentBid` varchar(20) DEFAULT NULL,
   `MinimumBid` varchar(20) DEFAULT NULL,
   `ItemPicture` varchar(255) DEFAULT NULL
@@ -137,13 +147,13 @@ CREATE TABLE `Item` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Review`
+-- Table structure for table `review`
 --
 
-CREATE TABLE `Review` (
-  `ReviewID` int(11) NOT NULL,
-  `UserID` int(11) DEFAULT NULL,
-  `AuctionID` int(11) DEFAULT NULL,
+CREATE TABLE `review` (
+  `ReviewID` varchar(10) NOT NULL,
+  `UserID` varchar(10) DEFAULT NULL,
+  `AuctionID` varchar(10) DEFAULT NULL,
   `UserRating` varchar(20) DEFAULT NULL,
   `ReviewDate` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -151,30 +161,52 @@ CREATE TABLE `Review` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `UserPersonalInformation`
+-- Table structure for table `userpersonalinformation`
 --
 
-CREATE TABLE `UserPersonalInformation` (
-  `UserID` int(11) NOT NULL,
-  `AdminID` int(11) DEFAULT NULL,
-  `AddressID` int(11) DEFAULT NULL,
+CREATE TABLE `userpersonalinformation` (
+  `UserID` varchar(10) NOT NULL,
+  `AdminID` varchar(10) DEFAULT NULL,
+  `AddressID` varchar(10) DEFAULT NULL,
   `FirstName` varchar(20) NOT NULL,
   `LastName` varchar(20) NOT NULL,
   `UserEmail` varchar(20) NOT NULL,
   `UserPassword` varchar(20) NOT NULL,
   `UserRating` int(11) DEFAULT NULL,
-  `TotalSalesAmount` varchar(20) DEFAULT NULL
+  `TotalSalesAmount` varchar(20) DEFAULT NULL,
+  `AccountType` varchar(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Triggers `userpersonalinformation`
+--
+DELIMITER $$
+CREATE TRIGGER `before_insert_user` BEFORE INSERT ON `userpersonalinformation` FOR EACH ROW BEGIN
+    DECLARE new_id VARCHAR(10); -- 用于存储生成的 ID
+    DECLARE max_id INT;         -- 当前最大数字部分的 ID
+
+    -- 获取当前最大 UserID 的数字部分
+    SELECT COALESCE(MAX(CAST(SUBSTRING(UserID, 2) AS UNSIGNED)), 0) INTO max_id
+    FROM UserPersonalInformation;
+
+    -- 生成新的 UserID，例如 U0000001
+    SET new_id = CONCAT('U', LPAD(max_id + 1, 7, '0'));
+
+    -- 将生成的 UserID 赋值给新插入的记录
+    SET NEW.UserID = new_id;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `WatchList`
+-- Table structure for table `watchlist`
 --
 
-CREATE TABLE `WatchList` (
-  `UserID` int(11) NOT NULL,
-  `ItemID` int(11) NOT NULL,
+CREATE TABLE `watchlist` (
+  `UserID` varchar(10) NOT NULL,
+  `ItemID` varchar(10) NOT NULL,
   `WatchListDate` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -183,81 +215,81 @@ CREATE TABLE `WatchList` (
 --
 
 --
--- Indexes for table `Address`
+-- Indexes for table `address`
 --
-ALTER TABLE `Address`
+ALTER TABLE `address`
   ADD PRIMARY KEY (`AddressID`);
 
 --
--- Indexes for table `AdminLogin`
+-- Indexes for table `adminlogin`
 --
-ALTER TABLE `AdminLogin`
+ALTER TABLE `adminlogin`
   ADD PRIMARY KEY (`AdminID`);
 
 --
--- Indexes for table `Auction`
+-- Indexes for table `auction`
 --
-ALTER TABLE `Auction`
+ALTER TABLE `auction`
   ADD PRIMARY KEY (`AuctionID`),
   ADD KEY `UserID` (`UserID`),
   ADD KEY `ItemID` (`ItemID`);
 
 --
--- Indexes for table `Bid`
+-- Indexes for table `bid`
 --
-ALTER TABLE `Bid`
+ALTER TABLE `bid`
   ADD PRIMARY KEY (`BidID`),
   ADD KEY `UserID` (`UserID`),
   ADD KEY `ItemID` (`ItemID`);
 
 --
--- Indexes for table `Category`
+-- Indexes for table `category`
 --
-ALTER TABLE `Category`
+ALTER TABLE `category`
   ADD PRIMARY KEY (`CategoryID`);
 
 --
--- Indexes for table `Commission`
+-- Indexes for table `commission`
 --
-ALTER TABLE `Commission`
+ALTER TABLE `commission`
   ADD PRIMARY KEY (`CommissionID`),
   ADD KEY `AuctionID` (`AuctionID`);
 
 --
--- Indexes for table `Inbox`
+-- Indexes for table `inbox`
 --
-ALTER TABLE `Inbox`
+ALTER TABLE `inbox`
   ADD PRIMARY KEY (`InboxID`),
   ADD KEY `UserID` (`UserID`);
 
 --
--- Indexes for table `Item`
+-- Indexes for table `item`
 --
-ALTER TABLE `Item`
+ALTER TABLE `item`
   ADD PRIMARY KEY (`ItemID`),
   ADD KEY `UserID` (`UserID`),
   ADD KEY `CategoryID` (`CategoryID`);
 
 --
--- Indexes for table `Review`
+-- Indexes for table `review`
 --
-ALTER TABLE `Review`
+ALTER TABLE `review`
   ADD PRIMARY KEY (`ReviewID`),
   ADD KEY `UserID` (`UserID`),
   ADD KEY `AuctionID` (`AuctionID`);
 
 --
--- Indexes for table `UserPersonalInformation`
+-- Indexes for table `userpersonalinformation`
 --
-ALTER TABLE `UserPersonalInformation`
+ALTER TABLE `userpersonalinformation`
   ADD PRIMARY KEY (`UserID`),
   ADD KEY `AdminID` (`AdminID`),
   ADD KEY `AddressID` (`AddressID`);
 
 --
--- Indexes for table `WatchList`
+-- Indexes for table `watchlist`
 --
-ALTER TABLE `WatchList`
+ALTER TABLE `watchlist`
   ADD PRIMARY KEY (`UserID`,`ItemID`),
   ADD KEY `ItemID` (`ItemID`);
 
@@ -266,58 +298,58 @@ ALTER TABLE `WatchList`
 --
 
 --
--- Constraints for table `Auction`
+-- Constraints for table `auction`
 --
-ALTER TABLE `Auction`
-  ADD CONSTRAINT `auction_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `UserPersonalInformation` (`UserID`),
-  ADD CONSTRAINT `auction_ibfk_2` FOREIGN KEY (`ItemID`) REFERENCES `Item` (`ItemID`);
+ALTER TABLE `auction`
+  ADD CONSTRAINT `auction_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `userpersonalinformation` (`UserID`),
+  ADD CONSTRAINT `auction_ibfk_2` FOREIGN KEY (`ItemID`) REFERENCES `item` (`ItemID`);
 
 --
--- Constraints for table `Bid`
+-- Constraints for table `bid`
 --
-ALTER TABLE `Bid`
-  ADD CONSTRAINT `bid_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `UserPersonalInformation` (`UserID`),
-  ADD CONSTRAINT `bid_ibfk_2` FOREIGN KEY (`ItemID`) REFERENCES `Item` (`ItemID`);
+ALTER TABLE `bid`
+  ADD CONSTRAINT `bid_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `userpersonalinformation` (`UserID`),
+  ADD CONSTRAINT `bid_ibfk_2` FOREIGN KEY (`ItemID`) REFERENCES `item` (`ItemID`);
 
 --
--- Constraints for table `Commission`
+-- Constraints for table `commission`
 --
-ALTER TABLE `Commission`
-  ADD CONSTRAINT `commission_ibfk_1` FOREIGN KEY (`AuctionID`) REFERENCES `Auction` (`AuctionID`);
+ALTER TABLE `commission`
+  ADD CONSTRAINT `commission_ibfk_1` FOREIGN KEY (`AuctionID`) REFERENCES `auction` (`AuctionID`);
 
 --
--- Constraints for table `Inbox`
+-- Constraints for table `inbox`
 --
-ALTER TABLE `Inbox`
-  ADD CONSTRAINT `inbox_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `UserPersonalInformation` (`UserID`);
+ALTER TABLE `inbox`
+  ADD CONSTRAINT `inbox_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `userpersonalinformation` (`UserID`);
 
 --
--- Constraints for table `Item`
+-- Constraints for table `item`
 --
-ALTER TABLE `Item`
-  ADD CONSTRAINT `item_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `UserPersonalInformation` (`UserID`),
-  ADD CONSTRAINT `item_ibfk_2` FOREIGN KEY (`CategoryID`) REFERENCES `Category` (`CategoryID`);
+ALTER TABLE `item`
+  ADD CONSTRAINT `item_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `userpersonalinformation` (`UserID`),
+  ADD CONSTRAINT `item_ibfk_2` FOREIGN KEY (`CategoryID`) REFERENCES `category` (`CategoryID`);
 
 --
--- Constraints for table `Review`
+-- Constraints for table `review`
 --
-ALTER TABLE `Review`
-  ADD CONSTRAINT `review_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `UserPersonalInformation` (`UserID`),
-  ADD CONSTRAINT `review_ibfk_2` FOREIGN KEY (`AuctionID`) REFERENCES `Auction` (`AuctionID`);
+ALTER TABLE `review`
+  ADD CONSTRAINT `review_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `userpersonalinformation` (`UserID`),
+  ADD CONSTRAINT `review_ibfk_2` FOREIGN KEY (`AuctionID`) REFERENCES `auction` (`AuctionID`);
 
 --
--- Constraints for table `UserPersonalInformation`
+-- Constraints for table `userpersonalinformation`
 --
-ALTER TABLE `UserPersonalInformation`
-  ADD CONSTRAINT `userpersonalinformation_ibfk_1` FOREIGN KEY (`AdminID`) REFERENCES `AdminLogin` (`AdminID`),
-  ADD CONSTRAINT `userpersonalinformation_ibfk_2` FOREIGN KEY (`AddressID`) REFERENCES `Address` (`AddressID`);
+ALTER TABLE `userpersonalinformation`
+  ADD CONSTRAINT `userpersonalinformation_ibfk_1` FOREIGN KEY (`AdminID`) REFERENCES `adminlogin` (`AdminID`),
+  ADD CONSTRAINT `userpersonalinformation_ibfk_2` FOREIGN KEY (`AddressID`) REFERENCES `address` (`AddressID`);
 
 --
--- Constraints for table `WatchList`
+-- Constraints for table `watchlist`
 --
-ALTER TABLE `WatchList`
-  ADD CONSTRAINT `watchlist_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `UserPersonalInformation` (`UserID`),
-  ADD CONSTRAINT `watchlist_ibfk_2` FOREIGN KEY (`ItemID`) REFERENCES `Item` (`ItemID`);
+ALTER TABLE `watchlist`
+  ADD CONSTRAINT `watchlist_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `userpersonalinformation` (`UserID`),
+  ADD CONSTRAINT `watchlist_ibfk_2` FOREIGN KEY (`ItemID`) REFERENCES `item` (`ItemID`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

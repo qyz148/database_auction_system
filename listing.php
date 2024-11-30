@@ -5,7 +5,6 @@
 <?php
   // Get info from the URL:
   $item_id = $_GET['item_id'];
-
   // TODO: Use item_id to make a query to the database.
   $conn = new mysqli("localhost", "root", "", "auction_system");
   if ($conn->connect_error) {
@@ -24,14 +23,15 @@
   $stmt->close();
   $conn->close();
 
-  $end_time = new DateTime($end_time);
 
   // TODO: Note: Auctions that have ended may pull a different set of data,
   //       like whether the auction ended in a sale or was cancelled due
   //       to lack of high-enough bids. Or maybe not.
   
   // Calculate time to auction end:
-  $now = new DateTime();
+  date_default_timezone_set('UTC');
+  $end_time = new DateTime($end_time);
+  $now = new DateTime("now");
   if ($now < $end_time) {
     $time_to_end = date_diff($now, $end_time);
     $time_remaining = ' (in ' . display_time_remaining($time_to_end) . ')';
@@ -62,16 +62,19 @@
   <div class="col-sm-4"> <!-- Right col with bidding info -->
     <p>
       <?php if ($now > $end_time): ?>
-        This auction ended <?php echo(date_format($end_time, 'j M H:i')); ?>
+        This auction ended <?php echo(date_format($end_time, 'j M H:i:s')); ?>
         <!-- TODO: Print the result of the auction here? -->
       <?php else: ?>
-        Auction ends <?php echo(date_format($end_time, 'j M H:i') . $time_remaining); ?></p>
+        Auction ends <?php echo(date_format($end_time, 'j M H:i:s') . $time_remaining); ?>
+        <?php echo(auctionTImer(date_format($end_time, 'Y-m-d H:i:s'))) ?>
+    </p>
+
         <p class="lead">Current bid: £<?php echo(number_format($current_price, 2)); ?></p>
 
         <!-- Bidding form -->
         <form method="POST" action="place_bid.php">
-          <input type="hidden" name="item_id" value="<?php echo htmlspecialchars($item_id); ?>">
-          <input type="hidden" name="user_id" value="1"> <!-- Replace with the actual logged-in user's ID -->
+          <input type="hidden" name="item_id" value="<?php echo $item_id; ?>">
+          <input type="hidden" name="user_id" value="<?php echo $_SESSION['user_id']; ?>"> <!-- Replace with the actual logged-in user's ID -->
           <div class="input-group">
             <div class="input-group-prepend">
               <span class="input-group-text">£</span>
@@ -85,6 +88,41 @@
 </div> <!-- End of row #2 -->
 
 </div> <!-- End of container -->
+
+<?php
+// Fetch bid records for this item
+$bid_records = get_bid_records($item_id);
+?>
+
+<div class="container">
+  <!-- Bid History Section -->
+  <div class="row">
+    <div class="col-sm-8">
+      <h4 class="my-4">Bid History</h4>
+      <?php if (!empty($bid_records)): ?>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Bid Amount</th>
+              <th scope="col">Time of Bid</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php foreach ($bid_records as $bid): ?>
+              <tr>
+                <td>£<?php echo number_format((float)$bid['BidAmount'], 2); ?></td>
+                <td><?php echo date('Y-m-d H:i:s', strtotime($bid['TimeOfBid'])); ?></td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      <?php else: ?>
+        <p>No bids have been placed yet.</p>
+      <?php endif; ?>
+    </div>
+  </div>
+</div>
+
 
 <?php include_once("footer.php") ?>
 
