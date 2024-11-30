@@ -53,18 +53,19 @@ while($row = $query_result->fetch_assoc()){
 
 // insert into item
 $stmt = $conn->prepare(
-    "INSERT INTO Item (ItemID, UserID, CategoryID, ItemName, ItemDescription, StartingPrice, ClosingDate) VALUES (?,?,?,?,?,?,?);"
+    "INSERT INTO Item (ItemID, UserID, CategoryID, ItemName, ItemDescription, StartingPrice, ClosingDate, CurrentBid) VALUES (?,?,?,?,?,?,?,?);"
 );
 $itemID = uuid4();
 $stmt->bind_param(
-    "sssssss",
+    "ssssssss",
     $itemID,
     $UserID,
     $categoryID,
     $auctionTitle,
     $auctionDetails,
     $auctionStartPrice,
-    $auctionEndDate
+    $auctionEndDate,
+    $auctionStartPrice
 );
 $stmt->execute();
 

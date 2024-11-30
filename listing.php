@@ -5,7 +5,6 @@
 <?php
   // Get info from the URL:
   $item_id = $_GET['item_id'];
-
   // TODO: Use item_id to make a query to the database.
   $conn = new mysqli("localhost", "root", "", "auction_system");
   if ($conn->connect_error) {
@@ -70,8 +69,8 @@
 
         <!-- Bidding form -->
         <form method="POST" action="place_bid.php">
-          <input type="hidden" name="item_id" value="<?php echo htmlspecialchars($item_id); ?>">
-          <input type="hidden" name="user_id" value="1"> <!-- Replace with the actual logged-in user's ID -->
+          <input type="hidden" name="item_id" value="<?php echo $item_id; ?>">
+          <input type="hidden" name="user_id" value="<?php echo $_SESSION['user_id']; ?>"> <!-- Replace with the actual logged-in user's ID -->
           <div class="input-group">
             <div class="input-group-prepend">
               <span class="input-group-text">£</span>

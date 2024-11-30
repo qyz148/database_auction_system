@@ -345,3 +345,17 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+-- Add initialized datasets
+-- category info
+INSERT INTO `category`(`CategoryID`, `ItemCategoryName`) VALUES ('item_1','chair');
+INSERT INTO `category`(`CategoryID`, `ItemCategoryName`) VALUES ('item_2','Display Card');
+INSERT INTO `category`(`CategoryID`, `ItemCategoryName`) VALUES ('item_3','CPU');
+INSERT INTO `category`(`CategoryID`, `ItemCategoryName`) VALUES ('item_4','Computer Monitor');
+
+-- admin details
+
+
+-- initial users (optional)
+
+

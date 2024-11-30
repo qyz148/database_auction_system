@@ -1,4 +1,5 @@
 <?php include_once("header.php")?>
+<?php require("utilities.php")?>
 
 <?php
 /* (Uncomment this block to redirect people without selling privileges away from this page)
@@ -44,10 +45,10 @@
           <div class="col-sm-10">
             <select class="form-control" name="auctionCategory" id="auctionCategory">
               <!-- <option selected>Choose...</option> -->
-              <option selected value="Display_Card">Display Card</option>
-              <option value="Computer_Monitor">Computer Monitor</option>
-              <option value="Chair">chair</option>
-              <option value="CPU">cpu</option>
+              <option selected value="chair">chair</option>
+              <option value="Display Card">Display Card</option>
+              <option value="CPU">CPU</option>
+              <option value="Computer Monitor">Computer Monitor</option>
             </select>
             <small id="categoryHelp" class="form-text text-muted"><span class="text-danger">* Required.</span> Select a category for this item.</small>
           </div>
