@@ -123,9 +123,9 @@ $order_by_sql = '';
   if ($ordering == 'name') {
     $order_by_sql = 'ORDER BY i.ItemName';
   } elseif ($ordering == 'price_asc') {
-    $order_by_sql = 'ORDER BY i.CurrentBid ASC';
+    $order_by_sql = 'ORDER BY convert(i.CurrentBid, DECIMAL) ASC';
   } elseif ($ordering == 'price_desc') {
-    $order_by_sql = 'ORDER BY i.CurrentBid DESC';
+    $order_by_sql = 'ORDER BY convert(i.CurrentBid, DECIMAL) DESC';
   }
 
  // caculate the num results for real
@@ -135,7 +135,7 @@ $order_by_sql = '';
   $num_results = $row_count['total'];
 
  // Query the items
-$query = "SELECT i.ItemID, i.ItemName, i.ItemDescription, i.CurrentBid, i.ClosingDate, i.ItemPicture, c.ItemCategoryName, i.ClosingDate, max(b.BidAmount) as BidAmount FROM item i LEFT JOIN category c ON i.CategoryID = c.CategoryID LEFT JOIN bid b ON i.ItemID = b.ItemID group by i.ItemID $where_sql $order_by_sql LIMIT $offset, $results_per_page";
+$query = "SELECT i.ItemID, i.ItemName, i.ItemDescription, i.CurrentBid, i.ClosingDate, i.ItemPicture, c.ItemCategoryName, i.ClosingDate, max(b.BidAmount) as BidAmount FROM item i LEFT JOIN category c ON i.CategoryID = c.CategoryID LEFT JOIN bid b ON i.ItemID = b.ItemID $where_sql group by i.ItemID $order_by_sql LIMIT $offset, $results_per_page";
 $result = mysqli_query($conn, $query);
  
 $max_page = ceil($num_results / $results_per_page);
@@ -167,16 +167,19 @@ $max_page = ceil($num_results / $results_per_page);
                           </h5>
                           <p>Category: <?php echo htmlspecialchars($row['ItemCategoryName']); ?></p>
                           <p>Description: <?php echo htmlspecialchars($row['ItemDescription']); ?></p>
-                          <p>Current Bid: £<?php echo htmlspecialchars(number_format($row['CurrentBid'], 2)); ?></p>
+                          
+                          <p>Current Bid: £ <?php echo htmlspecialchars(number_format($row['CurrentBid'], 2)); ?></p>
 			  <p>Bid Amount: <?php echo htmlspecialchars(is_null($row['BidAmount'])?'-':$row['BidAmount']); ?></p>
 			  <?php
+                            date_default_timezone_set('UTC');
+
                             $current_time = new DateTime();
                             $end_time = new DateTime($row['ClosingDate']);
                             
                             if ($current_time > $end_time): ?>
                                 <p class="text-danger">Auction has ended</p>
                             <?php else: ?>
-                                <p>Current Bid: £<?php echo htmlspecialchars(number_format($row['CurrentBid'], 2)); ?></p>
+                                <p>Current Bid: £ <?php echo htmlspecialchars(number_format($row['CurrentBid'], 2)); ?></p>
                             <?php endif; ?>
                             <p>Auction End Time: <?php echo htmlspecialchars($row['ClosingDate']); ?></p>
                       </div>

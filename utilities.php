@@ -166,17 +166,28 @@ function print_listing_li($item_id, $title, $desc, $price, $num_bids, $end_time,
     // Output the HTML for this listing
     echo('
     <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div class="p-2 mr-5">
-            <h5><a href="listing.php?item_id=' . $item_id . '">' . $title . '</a></h5>
-            <p>' . $desc_shortened . '</p>
-        </div>
-        <div class="p-2">
-            <img src="' . htmlspecialchars($item_picture) . '" alt="' . htmlspecialchars($title) . '" style="max-width: 150px; max-height: 150px; object-fit: cover;">
-        </div>
-        <div class="text-center text-nowrap">
-            <span style="font-size: 1.5em">£' . number_format($price, 2) . '</span><br/>' . $num_bids . $bid . '<br/>
-            <span id="time_remaining_' . $item_id . '">' . $time_remaining . '</span>
-        </div>
+        <table style="width:100%">
+            <tr>
+                <td width="30%">
+                <div class="p-2 mr-5">
+                    <h5><a href="listing.php?item_id=' . $item_id . '">' . $title . '</a></h5>
+                    <p>' . $desc_shortened . '</p>
+                </div>
+                </td>
+                <td width="50%">
+                <div class="p-2">
+                    <img src="' . htmlspecialchars($item_picture) . '" alt="' . htmlspecialchars($title) . '" style="max-width: 150px; max-height: 150px; object-fit: cover;">
+                </div>
+                </td>
+                <td width="20%">
+                <div class="text-center text-nowrap">
+                    <span style="font-size: 1.5em">£' . number_format($price, 2) . '</span><br/>' . $num_bids . $bid . '<br/>
+                    <span id="time_remaining_' . $item_id . '">' . $time_remaining . '</span>
+                </div>
+                </td>
+            </tr>
+        </table>
+
     </li>
     ');
 

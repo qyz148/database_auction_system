@@ -17,6 +17,7 @@
           WHERE ItemID = ?";
   $stmt = $conn->prepare($sql);
   $stmt->bind_param("s", $item_id);
+
   $stmt->execute();
   $stmt->bind_result($title, $description, $current_price, $end_time, $item_picture, $mini_bid);
   $stmt->fetch();
@@ -80,7 +81,15 @@
         </p>
 
         <p class="lead">Current bid: £<?php echo(number_format($current_price, 2)); ?></p>
-        <p class="lead">Minimum bid increment: £<?php echo(number_format($mini_bid, 2)); ?></p>
+        <p class="lead">
+          Minimum bid increment: 
+          <?php if(!is_null($mini_bid)){
+              echo "£ ".(number_format($mini_bid, 2));
+          }else{
+              echo "-";
+          }; ?> 
+        
+        </p>
         <?php if (isset($_SESSION['logged_in']) && $_SESSION['account_type'] !=='seller'):?>
           <!-- Bidding form -->
           <form method="POST" action="place_bid.php">

@@ -58,6 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     // 使用预处理语句插入数据以防止 SQL 注入
+    
     $stmt = $conn->prepare("INSERT INTO userPersonalInformation (FirstName, LastName, UserEmail, UserPassword, AccountType) VALUES (?, ?, ?, ?, ?)");
     $stmt->bind_param("sssss", $firstName, $lastName, $email, $password, $accountType);
 
