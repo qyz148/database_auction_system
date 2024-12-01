@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Update the CurrentBid in the item table
                 $update_sql = "UPDATE item SET CurrentBid = ? WHERE ItemID = ?";
                 $update_stmt = $conn->prepare($update_sql);
-                $update_stmt->bind_param("di", $bid_amount, $item_id);
+                $update_stmt->bind_param("ds", $bid_amount, $item_id);
                 $update_stmt->execute();
                 $update_stmt->close();
 

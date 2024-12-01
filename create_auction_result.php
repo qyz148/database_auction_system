@@ -57,8 +57,8 @@ $uploadDir = "images/"; // 目标目录
 // $targetFile = $uploadDir . basename($_FILES["auctionImage"]["name"]);
 $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
 // $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
-if (isset($_FILES['auctionImage'])) {
 
+if (isset($_FILES['auctionImage']) && $_FILES['auctionImage']['tmp_name'] !== "") {
     if ($_FILES['auctionImage']['error'] === UPLOAD_ERR_OK) {
         $fileTmpPath = $_FILES['auctionImage']['tmp_name'];
         $fileType = $_FILES['auctionImage']['type'];

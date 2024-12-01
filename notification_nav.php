@@ -19,8 +19,8 @@ if (!isset($_SESSION['user_id'])) {
 ?>
 
 <!-- Notification Nav -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="index.php">Auction System</a>
+<nav class="navbar navbar-expand-lg navbar-light " style="position:absolute;width:100%">
+    <!-- <a class="navbar-brand" href="index.php">Auction System</a> -->
     <ul class="navbar-nav ml-auto">
         <li class="nav-item">
             <a class="nav-link" href="inbox.php">

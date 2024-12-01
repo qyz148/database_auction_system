@@ -1,7 +1,7 @@
 <?php include("header.php")?>
 <?php require("utilities.php")?>
 <?php require("test_connection.php")?>
-
+<?php include("notification_nav.php"); ?>
 
 <div class="container">
 
@@ -33,7 +33,7 @@
   }
   
   $stmt = $conn->prepare($query);
-  $stmt->bind_param('i', $user_id);
+  $stmt->bind_param('s', $user_id);
   $stmt->execute();
   $result = $stmt->get_result();
   if($result->num_rows >0){
@@ -60,7 +60,6 @@
         var name = sortBy
         var header = document.getElementById(sortBy)
         var dir = dire
-        console.log(dir)
         if(name == curSort){
           if(dir == "ASC"){
             header.innerHTML = name.replace("_", " ") + " +"
@@ -77,12 +76,12 @@
     </script>
   ');
 
-    $tableHeader = '<table style="width:50vw">
+    $tableHeader = '<table style="width:800px">
       <tr>
         <th id="Bid_ID" style="width:50px" onclick="sortTable(`Bid_ID`)"></th>
         <th id="Item_Name" style="width:50px" onclick="sortTable(`Item_Name`)"></th>
         <th id="Bid_Amount" style="width:50px" onclick="sortTable(`Bid_Amount`)"></th>
-        <th id="Bid_Time" style="width:50px" onclick="sortTable(`Bid_Time`)"></th>
+        <th id="Bid_Time" style="width:100px" onclick="sortTable(`Bid_Time`)"></th>
       </tr>
     ';
   }
@@ -93,8 +92,8 @@
         <tr>
           <td style='width:50px'>" . $row['BidID'] . "</td>
           <td style='width:50px'><a href='listing.php?item_id=" . $row['ItemID'] . "'>" . $row['ItemName'] . "</a></td>
-          <td style='width:50px'>" . $row['BidAmount'] . "</td>
-          <td style='width:50px'>" . $row['TimeOfBid'] . "</td>
+          <td style='width:50px'> $ " . $row['BidAmount'] . "</td>
+          <td style='width:100px'>" . $row['TimeOfBid'] . " (UTC)</td>
         </tr>       
     ";
   }
