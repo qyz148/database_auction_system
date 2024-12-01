@@ -1,6 +1,7 @@
 <?php include_once("header.php") ?>
 <?php require("utilities.php") ?>
 <?php include("test_connection.php") ?>
+<?php include("notification_nav.php"); ?>
 
 <div class="container">
 
