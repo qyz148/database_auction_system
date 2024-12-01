@@ -12,13 +12,13 @@
   }
 
   // Fetch item details from the database
-  $sql = "SELECT ItemName AS title, ItemDescription AS description, CurrentBid AS current_price, ClosingDate AS end_time, ItemPicture 
+  $sql = "SELECT ItemName AS title, ItemDescription AS description, CurrentBid AS current_price, ClosingDate AS end_time, ItemPicture AS image, MinimumBid as mini_bid
           FROM item 
           WHERE ItemID = ?";
   $stmt = $conn->prepare($sql);
   $stmt->bind_param("s", $item_id);
   $stmt->execute();
-  $stmt->bind_result($title, $description, $current_price, $end_time, $item_picture);
+  $stmt->bind_result($title, $description, $current_price, $end_time, $item_picture, $mini_bid);
   $stmt->fetch();
   $stmt->close();
   $conn->close();
@@ -45,7 +45,11 @@
 ?>
 
 <div class="container">
-
+    <div class="row"> <!-- Row #1 with auction title -->
+        <div class="col-sm-8"> <!-- Left col -->
+            <h2 class="my-3"><?php echo htmlspecialchars($title); ?></h2>
+        </div>
+    </div>
   <div class="row"> <!-- Row #1 with auction title + image -->
     <div class="col-sm-8"> <!-- Left col -->
       <h2 class="my-3"><?php echo htmlspecialchars($title); ?></h2>
@@ -57,7 +61,7 @@
     <div class="col-sm-4"> <!-- Right col for image -->
       <h4 class="my-4">Item Picture:</h4>
       <?php if (!empty($item_picture)): ?>
-        <img src="<?php echo htmlspecialchars($item_picture); ?>" alt="Item Image" style="max-width: 100%; height: auto; object-fit: cover;">
+        <img src="<?php echo htmlspecialchars($item_picture); ?>" alt="Item Image" style="max-width: 100%; height: auto; object-fit: cover;" alt="Product Image">
       <?php else: ?>
         <img src="images/default.jpg" alt="Default Image" style="max-width: auto; height: auto; object-fit: cover;">
       <?php endif; ?>
@@ -76,6 +80,7 @@
         </p>
 
         <p class="lead">Current bid: £<?php echo(number_format($current_price, 2)); ?></p>
+        <p class="lead">Minimum bid increment: £<?php echo(number_format($mini_bid, 2)); ?></p>
         <?php if (isset($_SESSION['logged_in']) && $_SESSION['account_type'] !=='seller'):?>
           <!-- Bidding form -->
           <form method="POST" action="place_bid.php">
