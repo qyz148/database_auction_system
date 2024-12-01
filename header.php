@@ -22,7 +22,7 @@
   <!-- Custom CSS file -->
   <link rel="stylesheet" href="css/custom.css">
 
-  <title>不知道</title>
+  <title>Gamer Hub</title>
 </head>
 
 
@@ -30,7 +30,7 @@
 
 <!-- Navbars -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light mx-2">
-  <a class="navbar-brand" href="#">Site Name <!--CHANGEME!--></a>
+  <a class="navbar-brand" href="#">Gamer Hub <!--CHANGEME!--></a>
   <ul class="navbar-nav ml-auto">
     <li class="nav-item">
     
@@ -38,14 +38,16 @@
 <?php
   // Displays either login or logout on the right, depending on user's
   // current status (session).
-  echo $_SESSION['user_id'];
-  echo "<br>";
-  echo $_SESSION['account_type'];
+
   if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true) {
-    echo '<a class="nav-link" href="logout.php">Logout</a>';
+    echo ("Hello, user ".$_SESSION['user_id']. " ( " . $_SESSION['account_type'] . " ) ");
+    echo "<br>";
+    echo '<a style="float:right" class="nav-link" href="logout.php">Logout</a>';
   }
   else {
-    echo '<button type="button" class="btn nav-link" data-toggle="modal" data-target="#loginModal">Login</button>';
+    echo ("Please login to explore more features.");
+    echo "<br>";
+    echo '<button style="float:right" type="button" class="btn nav-link" data-toggle="modal" data-target="#loginModal">Login</button>';
   }
 ?>
 

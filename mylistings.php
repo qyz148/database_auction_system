@@ -36,7 +36,7 @@
   // Count total number of listings for pagination.
   $count_sql = "SELECT COUNT(*) FROM item WHERE UserID = ?";
   $count_stmt = $conn->prepare($count_sql);
-  $count_stmt->bind_param("i", $user_id);
+  $count_stmt->bind_param("s", $user_id);
   $count_stmt->execute();
   $count_stmt->bind_result($total_results);
   $count_stmt->fetch();
@@ -52,7 +52,7 @@
           ORDER BY ClosingDate ASC 
           LIMIT ?, ?";
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("iii", $user_id, $offset, $results_per_page);
+  $stmt->bind_param("sii", $user_id, $offset, $results_per_page);
   $stmt->execute();
   $stmt->bind_result($item_id, $item_name, $item_description, $current_bid, $closing_date, $num_bids);
 
