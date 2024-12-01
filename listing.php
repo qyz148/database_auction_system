@@ -16,7 +16,7 @@
           FROM item 
           WHERE ItemID = ?";
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("i", $item_id);
+  $stmt->bind_param("s", $item_id);
   $stmt->execute();
   $stmt->bind_result($title, $description, $current_price, $end_time, $item_picture);
   $stmt->fetch();
