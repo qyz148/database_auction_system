@@ -1,5 +1,6 @@
-<?php include_once("header.php")?>
+<?php include("header.php")?>
 <?php require("utilities.php")?>
+<?php require("test_connection.php")?>
 
 <div class="container">
 
@@ -14,26 +15,92 @@
   
   
   // TODO: Check user's credentials (cookie/session).
-  session_start();
+  // session_start();
   if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
   }
   
   // TODO: Perform a query to pull up the auctions they've bidded on.
-  require('database.php');
+  // require('database.php');
   $user_id = $_SESSION['user_id'];
-  $query = "SELECT * FROM bids WHERE user_id = ?";
+  $query = "SELECT b.BidID as BidID, b.BidAmount as BidAmount, i.ItemName as ItemName, b.TimeOfBid as BidTime, i.ItemID as ItemID, b.TimeOfBid as TimeOfBid FROM bid as b LEFT JOIN item as i on b.ItemID = i.ItemID where b.UserID = ? ";
+  $direction = "";
+  if(isset($_GET['sortBy']) && isset($_GET['dir'])){
+    $direction=$_GET['dir'];
+    $query = $query . "order by " . str_replace("_", "", $_GET['sortBy']) . " " .$_GET['dir'];
+  }
+  echo $query;
+
   $stmt = $conn->prepare($query);
   $stmt->bind_param('i', $user_id);
   $stmt->execute();
   $result = $stmt->get_result();
   
   // TODO: Loop through results and print them out as list items.
-  while ($row = $result->fetch_assoc()) {
-    echo "<li>Auction ID: " . $row['auction_id'] . " - Bid Amount: " . $row['bid_amount'] . "</li>";
-  }
+  if($result-> num_rows > 0){
+    echo ('
+        <script>
+          function sortTable(item){
+            console.log(item)
+            var name = item
+            var header = document.getElementById(name)
+            var dir = header.innerHTML.slice(-1)
+            console.log(dir)
+            if(dir == "+"){
+              // header.innerHTML = name.replace("_", " ") + " -"
+              window.location = window.location.origin + "/mybids.php?sortBy="+name+"&dir=DESC"
+            }else if(dir == "-"){
+              // header.innerHTML = name.replace("_", " ")
+              window.location =window.location.origin + "/mybids.php"
+            }else{
+              // header.innerHTML = name.replace("_", " ") + " +"
+              window.location = window.location.origin + "/mybids.php?sortBy="+name+"&dir=ASC"
+            }
+          }
+          function getTitle(sortBy, dire){
+            var name = sortBy
+            var header = document.getElementById(sortBy)
+            var dir = dire
+            console.log(dir)
+            if(dir == "ASC"){
+              header.innerHTML = name.replace("_", " ") + " -"
+            }else if(dir == "DESC"){
+              header.innerHTML = name.replace("_", " ")
+            }else{
+              header.innerHTML = name.replace("_", " ") + " +"
+            }
+          }
+        </script>
+    ');
+
+    $tableHeader = '
+    <table style="width:50vw">
+      <tr>
+        <th id="Bid_ID" style="width:50px" onclick="sortTable(`Bid_ID`)">{getTitle(`Bid_ID`,"'.$direction.'")}</th>
+        <th id="Item_Name" style="width:50px" onclick="sortTable(`Item_Name`)">{getTitle(`Item_Name`,"'.$direction.'")}</th>
+        <th id="Bid_Amount" style="width:50px" onclick="sortTable(`Bid_Amount`)">{getTitle(`Bid_Amount`,"'.$direction.'")}</th>
+        <th id="Bid_Time" style="width:50px" onclick="sortTable(`Bid_Time`)">{getTitle(`Bid_Time`,"'.$direction.'")}</th>
+      </tr>
+    ';
+
+    echo $tableHeader;
+
+    while ($row = $result->fetch_assoc()) {
+      echo "
+          <tr>
+            <td style='width:50px'>" . $row['BidID'] . "</td>
+            <td style='width:50px'><a href='listing.php?item_id=" . $row['ItemID'] . "'>" . $row['ItemName'] . "</a></td>
+            <td style='width:50px'>" . $row['BidAmount'] . "</td>
+            <td style='width:50px'>" . $row['TimeOfBid'] . "</td>
+          </tr>       
+      ";
+    }
+    echo "</tbale>";
+
   
+  }
+
 ?>
 
-<?php include_once("footer.php")?>
+<?php include_once("footer.php")?

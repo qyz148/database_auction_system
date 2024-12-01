@@ -38,14 +38,16 @@
 <?php
   // Displays either login or logout on the right, depending on user's
   // current status (session).
-  echo $_SESSION['user_id'];
-  echo "<br>";
-  echo $_SESSION['account_type'];
+
   if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true) {
-    echo '<a class="nav-link" href="logout.php">Logout</a>';
+    echo ("Hello, user ".$_SESSION['user_id']. " ( " . $_SESSION['account_type'] . " ) ");
+    echo "<br>";
+    echo '<a style="float:right" class="nav-link" href="logout.php">Logout</a>';
   }
   else {
-    echo '<button type="button" class="btn nav-link" data-toggle="modal" data-target="#loginModal">Login</button>';
+    echo ("Please login to explore more features.");
+    echo "<br>";
+    echo '<button style="float:right" type="button" class="btn nav-link" data-toggle="modal" data-target="#loginModal">Login</button>';
   }
 ?>
 

@@ -60,29 +60,32 @@
   </div>
 
   <div class="col-sm-4"> <!-- Right col with bidding info -->
-    <p>
+    
       <?php if ($now > $end_time): ?>
-        This auction ended <?php echo(date_format($end_time, 'j M H:i:s')); ?>
+        <p>This auction ended <?php echo(date_format($end_time, 'j M H:i:s')); ?></p>
         <!-- TODO: Print the result of the auction here? -->
       <?php else: ?>
-        Auction ends <?php echo(date_format($end_time, 'j M H:i:s') . $time_remaining); ?>
+        <p>
+        <!-- Auction ends <?php echo(date_format($end_time, 'j M H:i:s') . $time_remaining); ?> -->
         <?php echo(auctionTImer(date_format($end_time, 'Y-m-d H:i:s'))) ?>
-    </p>
+        </p>
 
         <p class="lead">Current bid: £<?php echo(number_format($current_price, 2)); ?></p>
-
-        <!-- Bidding form -->
-        <form method="POST" action="place_bid.php">
-          <input type="hidden" name="item_id" value="<?php echo $item_id; ?>">
-          <input type="hidden" name="user_id" value="<?php echo $_SESSION['user_id']; ?>"> <!-- Replace with the actual logged-in user's ID -->
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">£</span>
+        <?php if ($_SESSION['account_type'] !=='seller'):?>
+          <!-- Bidding form -->
+          <form method="POST" action="place_bid.php">
+            <input type="hidden" name="account_type" value="<?php echo $_SESSION['account_type']; ?>">
+            <input type="hidden" name="item_id" value="<?php echo $item_id; ?>">
+            <input type="hidden" name="user_id" value="<?php echo $_SESSION['user_id']; ?>"> <!-- Replace with the actual logged-in user's ID -->
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">£</span>
+              </div>
+              <input type="number" name="bid_amount" class="form-control" step="0.01" min="0" required>
             </div>
-            <input type="number" name="bid_amount" class="form-control" step="0.01" min="0" required>
-          </div>
-          <button type="submit" class="btn btn-primary form-control">Place bid</button>
-        </form>
+            <button type="submit" class="btn btn-primary form-control">Place bid</button>
+          </form>
+        <?php endif; ?>
       <?php endif; ?>
   </div> <!-- End of right col with bidding info -->
 </div> <!-- End of row #2 -->
