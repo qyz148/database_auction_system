@@ -1,4 +1,4 @@
-<?php include_once("header.php") ?>
+<?php include("header.php") ?>
 <?php require("utilities.php") ?>
 <?php include("test_connection.php") ?>
 
@@ -12,13 +12,13 @@
   }
 
   // Fetch item details from the database
-  $sql = "SELECT ItemName AS title, ItemDescription AS description, CurrentBid AS current_price, ClosingDate AS end_time, ItemPicture 
+  $sql = "SELECT ItemName AS title, ItemDescription AS description, CurrentBid AS current_price, ClosingDate AS end_time, ItemPicture AS image, MinimumBid as mini_bid
           FROM item 
           WHERE ItemID = ?";
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("i", $item_id);
+  $stmt->bind_param("s", $item_id);
   $stmt->execute();
-  $stmt->bind_result($title, $description, $current_price, $end_time, $item_picture);
+  $stmt->bind_result($title, $description, $current_price, $end_time, $item_picture, $mini_bid);
   $stmt->fetch();
   $stmt->close();
   $conn->close();
@@ -45,7 +45,11 @@
 ?>
 
 <div class="container">
-
+    <div class="row"> <!-- Row #1 with auction title -->
+        <div class="col-sm-8"> <!-- Left col -->
+            <h2 class="my-3"><?php echo htmlspecialchars($title); ?></h2>
+        </div>
+    </div>
   <div class="row"> <!-- Row #1 with auction title + image -->
     <div class="col-sm-8"> <!-- Left col -->
       <h2 class="my-3"><?php echo htmlspecialchars($title); ?></h2>
@@ -57,33 +61,30 @@
     <div class="col-sm-4"> <!-- Right col for image -->
       <h4 class="my-4">Item Picture:</h4>
       <?php if (!empty($item_picture)): ?>
-        <img src="<?php echo htmlspecialchars($item_picture); ?>" alt="Item Image" style="max-width: 100%; height: auto; object-fit: cover;">
+        <img src="<?php echo htmlspecialchars($item_picture); ?>" alt="Item Image" style="max-width: 100%; height: auto; object-fit: cover;" alt="Product Image">
       <?php else: ?>
         <img src="images/default.jpg" alt="Default Image" style="max-width: auto; height: auto; object-fit: cover;">
       <?php endif; ?>
     </div>
   </div>
 
-  <div class="row"> <!-- Row #2 with auction description + bidding info -->
-  <div class="col-sm-8"> <!-- Left col -->
-      <div class="itemDescription">
-      </div>
-    </div>
+  <div class="col-sm-4"> <!-- Right col with bidding info -->
     
+      <?php if ($now > $end_time): ?>
+        <p>This auction ended <?php echo(date_format($end_time, 'j M H:i:s')); ?></p>
+        <!-- TODO: Print the result of the auction here? -->
+      <?php else: ?>
+        <p>
+        <!-- Auction ends <?php echo(date_format($end_time, 'j M H:i:s') . $time_remaining); ?> -->
+        <?php echo(auctionTImer(date_format($end_time, 'Y-m-d H:i:s'))) ?>
+        </p>
 
-    <div class="col-sm-4"> <!-- Right col with bidding info -->
-      <p>
-        <?php if ($now > $end_time): ?>
-          This auction ended <?php echo(date_format($end_time, 'j M H:i:s')); ?>
-          <!-- TODO: Print the result of the auction here? -->
-        <?php else: ?>
-          <?php echo(auctionTImer(date_format($end_time, 'Y-m-d H:i:s'))) ?>
-      </p>
-
-          <p class="lead">Current bid: £<?php echo(number_format($current_price, 2)); ?></p>
-
+        <p class="lead">Current bid: £<?php echo(number_format($current_price, 2)); ?></p>
+        <p class="lead">Minimum bid increment: £<?php echo(number_format($mini_bid, 2)); ?></p>
+        <?php if (isset($_SESSION['logged_in']) && $_SESSION['account_type'] !=='seller'):?>
           <!-- Bidding form -->
           <form method="POST" action="place_bid.php">
+            <input type="hidden" name="account_type" value="<?php echo $_SESSION['account_type']; ?>">
             <input type="hidden" name="item_id" value="<?php echo $item_id; ?>">
             <input type="hidden" name="user_id" value="<?php echo $_SESSION['user_id']; ?>"> <!-- Replace with the actual logged-in user's ID -->
             <div class="input-group">
@@ -95,8 +96,9 @@
             <button type="submit" class="btn btn-primary form-control">Place bid</button>
           </form>
         <?php endif; ?>
-    </div> <!-- End of right col with bidding info -->
-  </div> <!-- End of row #2 -->
+      <?php endif; ?>
+  </div> <!-- End of right col with bidding info -->
+</div> <!-- End of row #2 -->
 
 </div> <!-- End of container -->
 
@@ -148,7 +150,7 @@ function addToWatchlist(button) {
   // Sends item ID as an argument to that function.
   $.ajax('watchlist_funcs.php', {
     type: "POST",
-    data: {functionname: 'add_to_watchlist', arguments: [<?php echo($item_id);?>]},
+    data: {functionname: 'add_to_watchlist', arguments: [<?php echo("'".$item_id."'");?>]},
 
     success: 
       function (obj, textstatus) {
@@ -180,7 +182,7 @@ function removeFromWatchlist(button) {
   // Sends item ID as an argument to that function.
   $.ajax('watchlist_funcs.php', {
     type: "POST",
-    data: {functionname: 'remove_from_watchlist', arguments: [<?php echo($item_id);?>]},
+    data: {functionname: 'remove_from_watchlist', arguments: [<?php echo("'".$item_id."'");?>]},
 
     success: 
       function (obj, textstatus) {
