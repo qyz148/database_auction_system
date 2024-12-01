@@ -12,13 +12,13 @@
   }
 
   // Fetch item details from the database
-  $sql = "SELECT ItemName AS title, ItemDescription AS description, CurrentBid AS current_price, ClosingDate AS end_time 
+  $sql = "SELECT ItemName AS title, ItemDescription AS description, CurrentBid AS current_price, ClosingDate AS end_time, ItemPicture 
           FROM item 
           WHERE ItemID = ?";
   $stmt = $conn->prepare($sql);
   $stmt->bind_param("s", $item_id);
   $stmt->execute();
-  $stmt->bind_result($title, $description, $current_price, $end_time);
+  $stmt->bind_result($title, $description, $current_price, $end_time, $item_picture);
   $stmt->fetch();
   $stmt->close();
   $conn->close();
@@ -46,16 +46,21 @@
 
 <div class="container">
 
-<div class="row"> <!-- Row #1 with auction title + watch button -->
-  <div class="col-sm-8"> <!-- Left col -->
-    <h2 class="my-3"><?php echo htmlspecialchars($title); ?></h2>
-  </div>
-</div>
-
-<div class="row"> <!-- Row #2 with auction description + bidding info -->
-  <div class="col-sm-8"> <!-- Left col with item info -->
-    <div class="itemDescription">
-      <?php echo nl2br(htmlspecialchars($description)); ?>
+  <div class="row"> <!-- Row #1 with auction title + image -->
+    <div class="col-sm-8"> <!-- Left col -->
+      <h2 class="my-3"><?php echo htmlspecialchars($title); ?></h2>
+      <div class="itemDescription">
+        <h4 class="my-4">Item Description:</h4>
+        <?php echo nl2br(htmlspecialchars($description)); ?>
+      </div>
+    </div>
+    <div class="col-sm-4"> <!-- Right col for image -->
+      <h4 class="my-4">Item Picture:</h4>
+      <?php if (!empty($item_picture)): ?>
+        <img src="<?php echo htmlspecialchars($item_picture); ?>" alt="Item Image" style="max-width: 100%; height: auto; object-fit: cover;">
+      <?php else: ?>
+        <img src="images/default.jpg" alt="Default Image" style="max-width: auto; height: auto; object-fit: cover;">
+      <?php endif; ?>
     </div>
   </div>
 
@@ -92,6 +97,7 @@
 
 </div> <!-- End of container -->
 
+
 <?php
 // Fetch bid records for this item
 $bid_records = get_bid_records($item_id);
@@ -101,7 +107,7 @@ $bid_records = get_bid_records($item_id);
   <!-- Bid History Section -->
   <div class="row">
     <div class="col-sm-8">
-      <h4 class="my-4">Bid History</h4>
+      <h4 class="my-4">Bid History:</h4>
       <?php if (!empty($bid_records)): ?>
         <table class="table table-striped">
           <thead>
@@ -139,7 +145,7 @@ function addToWatchlist(button) {
   // Sends item ID as an argument to that function.
   $.ajax('watchlist_funcs.php', {
     type: "POST",
-    data: {functionname: 'add_to_watchlist', arguments: [<?php echo($item_id);?>]},
+    data: {functionname: 'add_to_watchlist', arguments: [<?php echo("'".$item_id."'");?>]},
 
     success: 
       function (obj, textstatus) {
@@ -171,7 +177,7 @@ function removeFromWatchlist(button) {
   // Sends item ID as an argument to that function.
   $.ajax('watchlist_funcs.php', {
     type: "POST",
-    data: {functionname: 'remove_from_watchlist', arguments: [<?php echo($item_id);?>]},
+    data: {functionname: 'remove_from_watchlist', arguments: [<?php echo("'".$item_id."'");?>]},
 
     success: 
       function (obj, textstatus) {

@@ -1,6 +1,7 @@
 <?php include_once("header.php") ?>
 <?php require("utilities.php") ?>
 <?php include("test_connection.php") ?>
+<?php include("notification_nav.php"); ?>
 
 <div class="container">
 
@@ -45,7 +46,7 @@
   $max_page = ceil($total_results / $results_per_page);
 
   // Query to get the user's listings.
-  $sql = "SELECT ItemID, ItemName, ItemDescription, CurrentBid, ClosingDate, 
+  $sql = "SELECT ItemID, ItemName, ItemDescription, CurrentBid, ClosingDate, ItemPicture, 
                  (SELECT COUNT(*) FROM bid WHERE bid.ItemID = item.ItemID) AS num_bids 
           FROM item 
           WHERE UserID = ?
@@ -54,7 +55,7 @@
   $stmt = $conn->prepare($sql);
   $stmt->bind_param("sii", $user_id, $offset, $results_per_page);
   $stmt->execute();
-  $stmt->bind_result($item_id, $item_name, $item_description, $current_bid, $closing_date, $num_bids);
+  $stmt->bind_result($item_id, $item_name, $item_description, $current_bid, $closing_date, $item_picture, $num_bids);
 
   // TODO: Loop through results and print them out as list items.
   if ($total_results == 0) {
@@ -64,7 +65,7 @@
       while ($stmt->fetch()) {
           // Calculate time to auction end.
           $end_date = new DateTime($closing_date);
-          print_listing_li($item_id, $item_name, $item_description, $current_bid, $num_bids, $end_date);
+          print_listing_li($item_id, $item_name, $item_description, $current_bid, $num_bids, $end_date, $item_picture);
       }
       echo '</ul>';
   }

@@ -27,7 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->bind_result($current_bid, $closing_date);
         $stmt->fetch();
         $stmt->close();
-        $now = new DateTime();
+        date_default_timezone_set('UTC');
+        $now = new DateTime("now");
         $closing_date_time = new DateTime($closing_date);
 
         // Check if the auction has already ended

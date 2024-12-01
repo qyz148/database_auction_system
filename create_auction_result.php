@@ -16,6 +16,7 @@ $auctionReservePrice = isset($_POST['auctionReservePrice']) && $_POST['auctionRe
 
 $auctionEndDate = isset($_POST['auctionEndDate']) ? trim($_POST['auctionEndDate']) : '';
 
+
 $errors = [];
 if (empty($auctionTitle)) $errors[] = 'The title of the auction is required.';
 if (empty($auctionDetails)) $errors[] = 'Details about the auction are required.';
@@ -51,43 +52,51 @@ while($row = $query_result->fetch_assoc()){
     $categoryID = $row["CategoryID"];
 }
 
-// 设置允许的文件类型和上传目录
-$uploadDir = "uploads/"; // 目标目录
+//设置允许的文件类型和上传目录
+$uploadDir = "images/"; // 目标目录
+// $targetFile = $uploadDir . basename($_FILES["auctionImage"]["name"]);
 $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+// $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+if (isset($_FILES['auctionImage'])) {
 
-$imagePath = null; // 初始化变量，用于保存图片路径
+    if ($_FILES['auctionImage']['error'] === UPLOAD_ERR_OK) {
+        $fileTmpPath = $_FILES['auctionImage']['tmp_name'];
+        $fileType = $_FILES['auctionImage']['type'];
+        $fileExt = strtolower(pathinfo($_FILES['auctionImage']['name'], PATHINFO_EXTENSION));
 
-if (isset($_FILES['auctionImage']) && $_FILES['auctionImage']['error'] === UPLOAD_ERR_OK) {
-    $fileTmpPath = $_FILES['auctionImage']['tmp_name'];
-    $fileName = $_FILES['auctionImage']['name'];
-    $fileSize = $_FILES['auctionImage']['size'];
-    $fileType = $_FILES['auctionImage']['type'];
-    $fileExt = pathinfo($fileName, PATHINFO_EXTENSION);
+        if (in_array($fileType, $allowedTypes)) {
+            $newFileName = uniqid('img_', true) . '.' . $fileExt;
+            $destPath = $uploadDir . $newFileName;
 
-    // 验证文件类型
-    if (in_array($fileType, $allowedTypes)) {
-        // 生成唯一文件名并移动文件
-        $newFileName = uniqid('img_', true) . '.' . $fileExt;
-        $destPath = $uploadDir . $newFileName;
 
-        if (move_uploaded_file($fileTmpPath, $destPath)) {
-            $imagePath = $destPath; // 保存文件路径
+
+            if (move_uploaded_file($fileTmpPath, $destPath)) {
+
+                $imagePath = $destPath;
+
+            } else {
+                echo "Failed to move the uploaded file.";
+            }
         } else {
-            echo '<div class="alert alert-danger">Failed to move the uploaded file.</div>';
+            echo "Invalid file type.";
         }
     } else {
-        echo '<div class="alert alert-danger">Invalid file type. Please upload a JPG, PNG, or GIF image.</div>';
+        echo "Upload error code: " . $_FILES['auctionImage']['error'];
     }
+} else {
+    echo "No file uploaded.";
 }
+
+
 
 
 // insert into item
 $stmt = $conn->prepare(
-    "INSERT INTO Item (ItemID, UserID, CategoryID, ItemName, ItemDescription, StartingPrice, ClosingDate, CurrentBid) VALUES (?,?,?,?,?,?,?,?);"
+    "INSERT INTO Item (ItemID, UserID, CategoryID, ItemName, ItemDescription, StartingPrice, ClosingDate, CurrentBid, ItemPicture) VALUES (?,?,?,?,?,?,?,?,?);"
 );
 $itemID = uuid4();
 $stmt->bind_param(
-    "ssssssss",
+    "sssssssss",
     $itemID,
     $UserID,
     $categoryID,
@@ -95,8 +104,10 @@ $stmt->bind_param(
     $auctionDetails,
     $auctionStartPrice,
     $auctionEndDate,
-    $auctionStartPrice
+    $auctionStartPrice,
+    $imagePath
 );
+// var_dump($imagePath);
 $stmt->execute();
 
 $auctionID = uuid4();
