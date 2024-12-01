@@ -1,5 +1,6 @@
 <?php
 include("test_connection.php");
+include("utilities.php");
 session_start();
 date_default_timezone_set('UTC');
 
@@ -13,14 +14,15 @@ $user_id = $_SESSION['user_id'];
 
 // Function to add a notification to the inbox table
 function addInboxMessage($conn, $user_id, $message_content, $message_type) {
-    $sql = "INSERT INTO inbox (InboxID, UserID, MessageContent, MessageType) VALUES (UUID(), ?, ?, ?)";
+    $inboxID = uuid4();
+    $sql = "INSERT INTO inbox (InboxID, UserID, MessageContent, MessageType) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
 
     if (!$stmt) {
         die("Prepare failed: " . $conn->error);
     }
 
-    $stmt->bind_param("sss", $user_id, $message_content, $message_type);
+    $stmt->bind_param("ssss", $inboxID, $user_id, $message_content, $message_type);
     if ($stmt->execute()) {
         echo "Notification added for UserID: $user_id\n";
     } else {
@@ -33,13 +35,12 @@ function addInboxMessage($conn, $user_id, $message_content, $message_type) {
 // Check for auctions that ended recently and process notifications
 if (isset($_GET['check_auctions'])) {
     $now = date('Y-m-d H:i:s');
-
     // Step 1: Fetch auctions that have ended but not processed
     $sql = "SELECT a.AuctionID, a.ItemID, a.UserID AS SellerID 
             FROM auction a
-            WHERE a.AuctionStatus IS NULL AND a.AuctionStartingTime <= ?";
+            WHERE a.AuctionStatus = 'Active' AND date(a.AuctionStartingTime) <= date(NOW())";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $now);
+    // $stmt->bind_param("s", $now);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -50,6 +51,8 @@ if (isset($_GET['check_auctions'])) {
 
     while ($row = $result->fetch_assoc()) {
         $auction_id = $row['AuctionID'];
+        echo $auction_id;
+
         $item_id = $row['ItemID'];
         $seller_id = $row['SellerID'];
 
