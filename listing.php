@@ -1,4 +1,4 @@
-<?php include_once("header.php") ?>
+<?php include("header.php") ?>
 <?php require("utilities.php") ?>
 <?php include("test_connection.php") ?>
 
@@ -64,26 +64,22 @@
     </div>
   </div>
 
-  <div class="row"> <!-- Row #2 with auction description + bidding info -->
-  <div class="col-sm-8"> <!-- Left col -->
-      <div class="itemDescription">
-      </div>
-    </div>
+  <div class="col-sm-4"> <!-- Right col with bidding info -->
     
+      <?php if ($now > $end_time): ?>
+        <p>This auction ended <?php echo(date_format($end_time, 'j M H:i:s')); ?></p>
+        <!-- TODO: Print the result of the auction here? -->
+      <?php else: ?>
+        <p>
+        <!-- Auction ends <?php echo(date_format($end_time, 'j M H:i:s') . $time_remaining); ?> -->
+        <?php echo(auctionTImer(date_format($end_time, 'Y-m-d H:i:s'))) ?>
+        </p>
 
-    <div class="col-sm-4"> <!-- Right col with bidding info -->
-      <p>
-        <?php if ($now > $end_time): ?>
-          This auction ended <?php echo(date_format($end_time, 'j M H:i:s')); ?>
-          <!-- TODO: Print the result of the auction here? -->
-        <?php else: ?>
-          <?php echo(auctionTImer(date_format($end_time, 'Y-m-d H:i:s'))) ?>
-      </p>
-
-          <p class="lead">Current bid: £<?php echo(number_format($current_price, 2)); ?></p>
-
+        <p class="lead">Current bid: £<?php echo(number_format($current_price, 2)); ?></p>
+        <?php if (isset($_SESSION['logged_in']) && $_SESSION['account_type'] !=='seller'):?>
           <!-- Bidding form -->
           <form method="POST" action="place_bid.php">
+            <input type="hidden" name="account_type" value="<?php echo $_SESSION['account_type']; ?>">
             <input type="hidden" name="item_id" value="<?php echo $item_id; ?>">
             <input type="hidden" name="user_id" value="<?php echo $_SESSION['user_id']; ?>"> <!-- Replace with the actual logged-in user's ID -->
             <div class="input-group">
@@ -95,8 +91,9 @@
             <button type="submit" class="btn btn-primary form-control">Place bid</button>
           </form>
         <?php endif; ?>
-    </div> <!-- End of right col with bidding info -->
-  </div> <!-- End of row #2 -->
+      <?php endif; ?>
+  </div> <!-- End of right col with bidding info -->
+</div> <!-- End of row #2 -->
 
 </div> <!-- End of container -->
 
