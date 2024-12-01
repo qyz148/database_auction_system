@@ -1,4 +1,4 @@
-<?php include_once("header.php") ?>
+<?php include("header.php") ?>
 <?php require("utilities.php") ?>
 <?php include("test_connection.php") ?>
 
@@ -16,7 +16,7 @@
           FROM item 
           WHERE ItemID = ?";
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("i", $item_id);
+  $stmt->bind_param("s", $item_id);
   $stmt->execute();
   $stmt->bind_result($title, $description, $current_price, $end_time);
   $stmt->fetch();
@@ -71,7 +71,7 @@
         </p>
 
         <p class="lead">Current bid: £<?php echo(number_format($current_price, 2)); ?></p>
-        <?php if ($_SESSION['account_type'] !=='seller'):?>
+        <?php if (isset($_SESSION['logged_in']) && $_SESSION['account_type'] !=='seller'):?>
           <!-- Bidding form -->
           <form method="POST" action="place_bid.php">
             <input type="hidden" name="account_type" value="<?php echo $_SESSION['account_type']; ?>">
