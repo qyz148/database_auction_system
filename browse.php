@@ -107,7 +107,7 @@ include 'test_connection.php';
   /* For the purposes of pagination, it would also be helpful to know the
      total number of results that satisfy the above query */
   
-$results_per_page = 2;
+$results_per_page = 10;
 
   $offset = ($curr_page - 1) * $results_per_page;
   $where_clauses = [];
@@ -135,12 +135,7 @@ $order_by_sql = '';
   $num_results = $row_count['total'];
 
  // Query the items
-$query = "SELECT i.ItemID, i.ItemName, i.ItemDescription, i.CurrentBid, i.ClosingDate, i.ItemPicture, c.ItemCategoryName, i.ClosingDate, b.BidAmount 
-          FROM item i 
-          LEFT JOIN category c ON i.CategoryID = c.CategoryID
-	  LEFT JOIN bid b ON i.ItemID = b.ItemID
-          $where_sql $order_by_sql 
-          LIMIT $offset, $results_per_page";
+$query = "SELECT i.ItemID, i.ItemName, i.ItemDescription, i.CurrentBid, i.ClosingDate, i.ItemPicture, c.ItemCategoryName, i.ClosingDate, max(b.BidAmount) as BidAmount FROM item i LEFT JOIN category c ON i.CategoryID = c.CategoryID LEFT JOIN bid b ON i.ItemID = b.ItemID group by i.ItemID $where_sql $order_by_sql LIMIT $offset, $results_per_page";
 $result = mysqli_query($conn, $query);
  
 $max_page = ceil($num_results / $results_per_page);
@@ -173,7 +168,7 @@ $max_page = ceil($num_results / $results_per_page);
                           <p>Category: <?php echo htmlspecialchars($row['ItemCategoryName']); ?></p>
                           <p>Description: <?php echo htmlspecialchars($row['ItemDescription']); ?></p>
                           <p>Current Bid: £<?php echo htmlspecialchars(number_format($row['CurrentBid'], 2)); ?></p>
-			  <p>Bid Amount: <?php echo htmlspecialchars(is_null($row['BidAmount'])?'':$row['BidAmount']); ?></p>
+			  <p>Bid Amount: <?php echo htmlspecialchars(is_null($row['BidAmount'])?'-':$row['BidAmount']); ?></p>
 			  <?php
                             $current_time = new DateTime();
                             $end_time = new DateTime($row['ClosingDate']);

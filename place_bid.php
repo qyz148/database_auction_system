@@ -6,6 +6,7 @@ include("utilities.php");
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Extract and sanitize POST variables
+    $account_type = filter_input(INPUT_POST, 'account_type', FILTER_SANITIZE_ENCODED);
     $item_id = filter_input(INPUT_POST, 'item_id', FILTER_SANITIZE_ENCODED);
     $user_id = filter_input(INPUT_POST, 'user_id', FILTER_SANITIZE_ENCODED);
     $bid_amount = filter_input(INPUT_POST, 'bid_amount', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
@@ -26,7 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->bind_result($current_bid, $closing_date);
         $stmt->fetch();
         $stmt->close();
-        $now = new DateTime();
+        date_default_timezone_set('UTC');
+        $now = new DateTime("now");
         $closing_date_time = new DateTime($closing_date);
 
         // Check if the auction has already ended
@@ -35,7 +37,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } elseif ($bid_amount <= $current_bid) {
             // Check if the bid amount is higher than the current bid
             echo "Your bid must be higher than the current bid.";
-            header("refresh:2;mylistings.php");
+            // depends on user type, jump back to different page
+            if($account_type=="seller"){
+                header("refresh:2;mylistings.php");
+            }else{
+                header("refresh:2;mybids.php");
+            }
         } else {
             // Insert the new bid into the bid table
             $sql = "INSERT INTO bid (BidID, UserID, ItemID, BidAmount, TimeOfBid) VALUES (?, ?, ?, ?, NOW())";
@@ -52,12 +59,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $update_stmt->close();
 
                 echo "Bid placed successfully!";
-                header("refresh:2;mylistings.php");
+                // depends on user type, jump back to different page
+                if($account_type=="seller"){
+                    header("refresh:2;mylistings.php");
+                }else{
+                    header("refresh:2;mybids.php");
+                }
             } else {
                 echo "Failed to place bid. Please try again.";
-                header("refresh:2;mylistings.php");
-                
-
+                // depends on user type, jump back to different page
+                if($account_type=="seller"){
+                    header("refresh:2;mylistings.php");
+                }else{
+                    header("refresh:2;mybids.php");
+                }
             }
             $stmt->close();
         }
