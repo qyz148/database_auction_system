@@ -65,9 +65,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($stmt->execute()) {
         // 自动登录：将用户信息保存到会话中
         $_SESSION['logged_in'] = true;
-        $_SESSION['user_email'] = $email;
-        $_SESSION['user_first_name'] = $firstName;
-        $_SESSION['user_last_name'] = $lastName;
+        $_SESSION['email'] = $email;
+        $_SESSION['first_name'] = $firstName;
+        $_SESSION['last_name'] = $lastName;
         $_SESSION['account_type'] = $accountType;
         $stmt = 
             "SELECT UserID FROM userpersonalinformation WHERE UserEmail = '" . $email . "' and FirstName = '" .$firstName."' and LastName = '" .$lastName. "' and UserPassword = '" .$password."';";

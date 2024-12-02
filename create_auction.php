@@ -45,7 +45,7 @@
           <div class="col-sm-10">
             <select class="form-control" name="auctionCategory" id="auctionCategory">
               <!-- <option selected>Choose...</option> -->
-              <option selected value="chair">chair</option>
+              <option selected value="Chair">Chair</option>
               <option value="Display Card">Display Card</option>
               <option value="CPU">CPU</option>
               <option value="Computer Monitor">Computer Monitor</option>

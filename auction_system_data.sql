@@ -8,12 +8,6 @@ INSERT INTO `bid` (`BidID`, `UserID`, `ItemID`, `BidAmount`, `TimeOfBid`) VALUES
 ('f923314241', 'U0000002', '8000be9288', '222', '2024-12-01 23:58:16'),
 ('fcbeec254d', 'U0000002', '766c5834f0', '20000', '2024-12-01 23:58:38');
 
-INSERT INTO `category` (`CategoryID`, `ItemCategoryName`) VALUES
-('item_1', 'chair'),
-('item_2', 'Display Card'),
-('item_3', 'CPU'),
-('item_4', 'Computer Monitor');
-
 INSERT INTO `inbox` (`InboxID`, `UserID`, `MessageContent`, `MessageType`) VALUES
 ('3df49669a1', 'U0000002', 'Congratulations! You won the auction for item 8000be9288 at £222.', 'Auction Win'),
 ('920fd2f8e6', 'U0000005', 'Your auction for item 8000be9288 has ended with a final price of £222.', 'Auction End');

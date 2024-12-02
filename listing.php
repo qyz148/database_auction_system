@@ -48,10 +48,17 @@
   $watching = false;   // Simulate watchlist status for development
 ?>
 
-<div class="container">
-  <div class="row">
+<div class="container" style="padding-top:20px">
+  <div class="row" style="width:100%">
     <br/>
     <h2> <?php echo htmlspecialchars($title); ?></h2>
+    <br/>
+    <div style="width:61%">
+      <?php if ($_SESSION['account_type']=="buyer"): ?>
+        <button style="float:right" type="button">Add to WatchList</button>
+      <?php endif; ?>
+    </div>
+
   </div>
   <div class="row"> <!-- Row #1 with auction title + image -->
     <div class="col-sm-6"> <!-- Left col -->

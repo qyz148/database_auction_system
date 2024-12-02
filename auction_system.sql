@@ -93,7 +93,7 @@ CREATE TABLE `category` (
 --
 
 INSERT INTO `category` (`CategoryID`, `ItemCategoryName`) VALUES
-('item_1', 'chair'),
+('item_1', 'Chair'),
 ('item_2', 'Display Card'),
 ('item_3', 'CPU'),
 ('item_4', 'Computer Monitor');

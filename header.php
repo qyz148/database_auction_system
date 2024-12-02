@@ -22,13 +22,13 @@
 
   <!-- Custom CSS file -->
   <link rel="stylesheet" href="css/custom.css">
-  <title>Gamer Hub</title>
+  <title >Gamer Hub</title>
 </head>
 <body>
 
 <!-- Navbars -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light mx-2">
-  <a class="navbar-brand" href="#">Gamer Hub <!--CHANGEME!--></a>
+  <a class="navbar-brand" href="#" style="font-weight:800;font-size:40px;color:rgb(120, 120, 120)">Gamer Hub <!--CHANGEME!--></a>
   <ul class="navbar-nav ml-auto">
     <li class="nav-item">
     
