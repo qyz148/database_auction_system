@@ -22,15 +22,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Check the current highest bid and closing date of the item
         $sql = "SELECT CurrentBid, ClosingDate FROM item WHERE ItemID = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $item_id);
+        $stmt->bind_param("s", $item_id);
         $stmt->execute();
         $stmt->bind_result($current_bid, $closing_date);
         $stmt->fetch();
         $stmt->close();
         date_default_timezone_set('UTC');
-        $now = new DateTime("now");
+        $now = new DateTime();
         $closing_date_time = new DateTime($closing_date);
-
+        // echo(date_format($now, 'j M H:i:s'));
+        // echo "<br>";
+        // echo(date_format($closing_date_time, 'j M H:i:s'));
         // Check if the auction has already ended
         if ($now > $closing_date_time) {
             echo "The auction for this item has already ended.";

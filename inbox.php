@@ -9,7 +9,6 @@ if (!isset($_SESSION['user_id'])) {
     echo "Please log in to view your notifications.";
     exit;
 }
-
 $user_id = $_SESSION['user_id'];
 
 // Function to add a notification to the inbox table
@@ -33,12 +32,12 @@ function addInboxMessage($conn, $user_id, $message_content, $message_type) {
 }
 
 // Check for auctions that ended recently and process notifications
+// if(true){
 if (isset($_GET['check_auctions'])) {
+// while(true){
     $now = date('Y-m-d H:i:s');
-    // Step 1: Fetch auctions that have ended but not processed
-    $sql = "SELECT a.AuctionID, a.ItemID, a.UserID AS SellerID 
-            FROM auction a
-            WHERE a.AuctionStatus = 'Active' AND date(a.AuctionStartingTime) <= date(NOW())";
+    // Step 1: Fetch auctions that have ended but not processed and passed the due time
+    $sql = "SELECT a.AuctionID, a.ItemID, a.UserID AS SellerID FROM auction a JOIN item i on a.ItemID = i.ItemID WHERE a.AuctionStartingTime <= NOW() AND i.ClosingDate < NOW() AND a.AuctionStatus = 'Active';";
     $stmt = $conn->prepare($sql);
     // $stmt->bind_param("s", $now);
     $stmt->execute();
@@ -51,8 +50,6 @@ if (isset($_GET['check_auctions'])) {
 
     while ($row = $result->fetch_assoc()) {
         $auction_id = $row['AuctionID'];
-        echo $auction_id;
-
         $item_id = $row['ItemID'];
         $seller_id = $row['SellerID'];
 
@@ -77,26 +74,29 @@ if (isset($_GET['check_auctions'])) {
         $bid_stmt->close();
 
         // Step 3: Update auction status and final price
-        $update_sql = "UPDATE auction SET AuctionStatus = 'Completed', PurchasePrice = ? WHERE AuctionID = ?";
+        $update_sql = "UPDATE auction SET AuctionStatus = 'Completed', PurchasePrice = ? WHERE AuctionID = ? ";
         $update_stmt = $conn->prepare($update_sql);
         $update_stmt->bind_param("ds", $final_price, $auction_id);
 
         if ($update_stmt->execute()) {
             echo "Auction updated successfully for AuctionID: $auction_id.\n";
+            // Step 4: Add notifications to inbox
+            addInboxMessage($conn, $buyer_id, "Congratulations! You won the auction for item $item_id at £$final_price.", "Auction Win");
+            addInboxMessage($conn, $seller_id, "Your auction for item $item_id has ended with a final price of £$final_price.", "Auction End");
         } else {
             echo "Failed to update auction for AuctionID: $auction_id.\n";
         }
 
         $update_stmt->close();
 
-        // Step 4: Add notifications to inbox
-        addInboxMessage($conn, $buyer_id, "Congratulations! You won the auction for item $item_id at £$final_price.", "Auction Win");
-        addInboxMessage($conn, $seller_id, "Your auction for item $item_id has ended with a final price of £$final_price.", "Auction End");
+
     }
 
     $stmt->close();
     echo json_encode(["status" => "checked"]);
     exit;
+    // sleep(5);
+    // echo "<script>console.log('yes')</script>";
 }
 
 // Retrieve notifications for the current user

@@ -38,75 +38,84 @@
   $result = $stmt->get_result();
   if($result->num_rows >0){
     echo ('
-    <script>
-      function sortTable(item){
-        console.log(item)
-        var name = item
-        var header = document.getElementById(name)
-        var dir = header.innerHTML.slice(-1)
-        console.log(dir)
-        if(dir == "+"){
-          // header.innerHTML = name.replace("_", " ") + " -"
-          window.location = window.location.origin + "/mybids.php?sortBy="+name+"&dir=DESC"
-        }else if(dir == "-"){
-          // header.innerHTML = name.replace("_", " ")
-          window.location =window.location.origin + "/mybids.php"
-        }else{
-          // header.innerHTML = name.replace("_", " ") + " +"
-          window.location = window.location.origin + "/mybids.php?sortBy="+name+"&dir=ASC"
-        }
-      }
-      function getTitle(sortBy, dire, curSort){
-        var name = sortBy
-        var header = document.getElementById(sortBy)
-        var dir = dire
-        if(name == curSort){
-          if(dir == "ASC"){
-            header.innerHTML = name.replace("_", " ") + " +"
-          }else if(dir == "DESC"){
-            header.innerHTML = name.replace("_", " ") + " -"
-          }else{
-            header.innerHTML = name.replace("_", " ") + ""
+        <script>
+          function sortTable(item){
+            console.log(item)
+            var name = item
+            var header = document.getElementById(name)
+            var dir = header.innerHTML.slice(-1)
+            console.log(dir)
+            if(dir == "+"){
+              // header.innerHTML = name.replace("_", " ") + " -"
+              window.location = window.location.origin + "/mybids.php?sortBy="+name+"&dir=DESC"
+            }else if(dir == "-"){
+              // header.innerHTML = name.replace("_", " ")
+              window.location =window.location.origin + "/mybids.php"
+            }else{
+              // header.innerHTML = name.replace("_", " ") + " +"
+              window.location = window.location.origin + "/mybids.php?sortBy="+name+"&dir=ASC"
+            }
           }
-        }else{
-          header.innerHTML = name.replace("_", " ") + ""
-        }
+          function getTitle(sortBy, dire, curSort){
+            var name = sortBy
+            var header = document.getElementById(sortBy)
+            var dir = dire
+            if(name == curSort){
+              if(dir == "ASC"){
+                header.innerHTML = name.replace("_", " ") + " +"
+              }else if(dir == "DESC"){
+                header.innerHTML = name.replace("_", " ") + " -"
+              }else{
+                header.innerHTML = name.replace("_", " ") + ""
+              }
+            }else{
+              header.innerHTML = name.replace("_", " ") + ""
+            }
 
-      }
-    </script>
-  ');
+          }
+        </script>
+      ');
 
-    $tableHeader = '<table style="width:800px">
-      <tr>
-        <th id="Bid_ID" style="width:50px" onclick="sortTable(`Bid_ID`)"></th>
-        <th id="Item_Name" style="width:50px" onclick="sortTable(`Item_Name`)"></th>
-        <th id="Bid_Amount" style="width:50px" onclick="sortTable(`Bid_Amount`)"></th>
-        <th id="Bid_Time" style="width:100px" onclick="sortTable(`Bid_Time`)"></th>
-      </tr>
-    ';
-  }
-
-  echo $tableHeader;
-  while ($row = $result->fetch_assoc()) {
-    echo "
+      $tableHeader = '
+          <style>
+      .tb { border-collapse: collapse; width:300px; }
+      .tb th, .tb td { padding: 5px; border: solid 1px #777; }
+      .tb th { background-color: lightblue; }
+    </style>
+    
+      <table style="width:800px" class="tb">
         <tr>
-          <td style='width:50px'>" . $row['BidID'] . "</td>
-          <td style='width:50px'><a href='listing.php?item_id=" . $row['ItemID'] . "'>" . $row['ItemName'] . "</a></td>
-          <td style='width:50px'> $ " . $row['BidAmount'] . "</td>
-          <td style='width:100px'>" . $row['TimeOfBid'] . " (UTC)</td>
-        </tr>       
-    ";
-  }
-  echo "</tbale>";
-  echo '
-    <script>
-      getTitle(`Bid_ID`,"'.$direction.'","'.$sortByy.'")
-      getTitle(`Item_Name`,"'.$direction.'","'.$sortByy.'")
-      getTitle(`Bid_Amount`,"'.$direction.'","'.$sortByy.'")
-      getTitle(`Bid_Time`,"'.$direction.'","'.$sortByy.'")
-    </script>
-  ';
+          <th id="Bid_ID" style="width:50px" onclick="sortTable(`Bid_ID`)"></th>
+          <th id="Item_Name" style="width:50px" onclick="sortTable(`Item_Name`)"></th>
+          <th id="Bid_Amount" style="width:50px" onclick="sortTable(`Bid_Amount`)"></th>
+          <th id="Bid_Time" style="width:100px" onclick="sortTable(`Bid_Time`)"></th>
+        </tr>
+      ';
+    
 
+    echo $tableHeader;
+    while ($row = $result->fetch_assoc()) {
+      echo "
+          <tr>
+            <td style='width:50px'>" . $row['BidID'] . "</td>
+            <td style='width:50px'><a href='listing.php?item_id=" . $row['ItemID'] . "'>" . $row['ItemName'] . "</a></td>
+            <td style='width:50px'> $ " . $row['BidAmount'] . "</td>
+            <td style='width:100px'>" . $row['TimeOfBid'] . " (UTC)</td>
+          </tr>       
+      ";
+    }
+    echo "</tbale>";
+    echo '
+      <script>
+        getTitle(`Bid_ID`,"'.$direction.'","'.$sortByy.'")
+        getTitle(`Item_Name`,"'.$direction.'","'.$sortByy.'")
+        getTitle(`Bid_Amount`,"'.$direction.'","'.$sortByy.'")
+        getTitle(`Bid_Time`,"'.$direction.'","'.$sortByy.'")
+      </script>
+    ';
+  }else{
+    echo "<p>No bids have been placed yet.</p>";
+  }
 ?>
 
 <?php include_once("footer.php")?>
