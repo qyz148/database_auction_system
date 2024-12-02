@@ -7,6 +7,7 @@
   // $_SESSION['logged_in'];
   // $_SESSION['account_type'];
 ?>
+<?php include("periodicCall.php")?>
 
 
 <!doctype html>
@@ -21,16 +22,13 @@
 
   <!-- Custom CSS file -->
   <link rel="stylesheet" href="css/custom.css">
-
-  <title>Gamer Hub</title>
+  <title >Gamer Hub</title>
 </head>
-
-
 <body>
 
 <!-- Navbars -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light mx-2">
-  <a class="navbar-brand" href="#">Gamer Hub <!--CHANGEME!--></a>
+  <a class="navbar-brand" href="#" style="font-weight:800;font-size:40px;color:rgb(120, 120, 120)">Gamer Hub <!--CHANGEME!--></a>
   <ul class="navbar-nav ml-auto">
     <li class="nav-item">
     
@@ -40,7 +38,7 @@
   // current status (session).
 
   if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true) {
-    echo ("Hello, user ".$_SESSION['user_id']. " ( " . $_SESSION['account_type'] . " ) ");
+    echo ("Hello, ".$_SESSION['last_name']. " ( " . $_SESSION['account_type'] . " ) ");
     echo "<br>";
     echo '<a style="float:right" class="nav-link" href="logout.php">Logout</a>';
   }

@@ -35,6 +35,8 @@ if (isset($_POST['email']) && isset($_POST['password'])) {
             $_SESSION['email'] = $row['UserEmail'];
             $_SESSION['account_type'] = $row['AccountType'];
             $_SESSION['user_id'] = $row['UserID'];
+            $_SESSION['first_name'] = $row['FirstName'];
+            $_SESSION['last_name'] = $row['LastName'];
             echo '<div class="text-center">Logged in successfully. Please wait for redirecting...</div>';
             header("refresh:1;url=index.php");
         } else {

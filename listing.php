@@ -32,7 +32,10 @@
   // Calculate time to auction end:
   date_default_timezone_set('UTC');
   $end_time = new DateTime($end_time);
-  $now = new DateTime("now");
+  $now = new DateTime();
+  // echo(date_format($now, 'j M H:i:s'));
+  // echo "<br>";
+  // echo(date_format($end_time, 'j M H:i:s'));
   if ($now < $end_time) {
     $time_to_end = date_diff($now, $end_time);
     $time_remaining = ' (in ' . display_time_remaining($time_to_end) . ')';
@@ -45,15 +48,20 @@
   $watching = false;   // Simulate watchlist status for development
 ?>
 
-<div class="container">
-    <div class="row"> <!-- Row #1 with auction title -->
-        <div class="col-sm-8"> <!-- Left col -->
-            <h2 class="my-3"><?php echo htmlspecialchars($title); ?></h2>
-        </div>
+<div class="container" style="padding-top:20px">
+  <div class="row" style="width:100%">
+    <br/>
+    <h2> <?php echo htmlspecialchars($title); ?></h2>
+    <br/>
+    <div style="width:61%">
+      <?php if ($_SESSION['account_type']=="buyer"): ?>
+        <button style="float:right" type="button">Add to WatchList</button>
+      <?php endif; ?>
     </div>
+
+  </div>
   <div class="row"> <!-- Row #1 with auction title + image -->
-    <div class="col-sm-8"> <!-- Left col -->
-      <h2 class="my-3"><?php echo htmlspecialchars($title); ?></h2>
+    <div class="col-sm-6"> <!-- Left col -->
       <div class="itemDescription">
         <h4 class="my-4">Item Description:</h4>
         <?php echo nl2br(htmlspecialchars($description)); ?>
@@ -64,7 +72,7 @@
       <?php if (!empty($item_picture)): ?>
         <img src="<?php echo htmlspecialchars($item_picture); ?>" alt="Item Image" style="max-width: 100%; height: auto; object-fit: cover;" alt="Product Image">
       <?php else: ?>
-        <img src="images/default.jpg" alt="Default Image" style="max-width: auto; height: auto; object-fit: cover;">
+        <img src="images/default.jpg" alt="Default Image" style="max-width: 20vw; height: auto; object-fit: cover;">
       <?php endif; ?>
     </div>
   </div>
@@ -144,6 +152,7 @@ $bid_records = get_bid_records($item_id);
       <?php endif; ?>
     </div>
   </div>
+  <div style="height:50px"></div>
 </div>
 
 
